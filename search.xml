@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>java</title>
+    <url>/2024/10/07/java%E5%8F%8D%E5%B0%84/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在聊 Java 反射前，我们先来简单的理解一下何为反射</p>
+<p>有“反”，那么相应的也就有“正”，我们先来看看“正”是概念，看一段代码</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">Person</span> <span class="variable">person</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Person</span>();</span><br><span class="line">person.setname(<span class="string">&quot;Jack&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>上面这段代码，显然在利用类 <code>Person</code> 之前，我们知道它是用来做什么的，也知道我们要利用什么。因此在这里，我们对该类进行了实例化，再使用这个类对象进行操作。这样一个对类对象的初始化的例子，我们可以理解为“正”</p>
+<p>那么何为“反”呢，从“正”的反面来看，就是我们在一开始不知道初始化的类对象是什么，也就无法使用 <code>New</code> 来创建对象</p>
+<p>来看一段代码</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">execute</span><span class="params">(String className, String methodName)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line"> <span class="type">Class</span> <span class="variable">clazz</span> <span class="operator">=</span> Class.forName(className);</span><br><span class="line"> clazz.getMethod(methodName).invoke(clazz.newInstance());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里简单解释一下，<code>forName</code> 用于获取对应类名为 <code>classname</code> 的类，<code>getMethod</code> 用于获取该类中的方法 <code>methodName</code>，而 <code>.invoke</code> 则是用来执行这个函数</p>
+<p>那么显然，如果我们在不知道传入的参数值的情况下，我们是不知道本段代码会实例化什么对象以及调用什么方法，这也就是反射</p>
+<h1 id="Java-中获取类的途径"><a href="#Java-中获取类的途径" class="headerlink" title="Java 中获取类的途径"></a>Java 中获取类的途径</h1><p>除去 <code>forName</code> 外，下面还有几种方法获取类</p>
+<ul>
+<li><code>obj.getClass()</code> 如果上下⽂中存在某个类的实例 <code>obj</code> ，那么我们可以直接通过 <code>obj.getClass()</code> 来获取它的类 </li>
+<li><code>Test.class</code> 如果你已经加载了某个类，只是想获取到它的 <code>java.lang.Class</code> 对象，那么就直接 拿它的 <code>class</code> 属性即可。这个⽅法其实不属于反射。</li>
+</ul>
+<h1 id="反射的一些利用"><a href="#反射的一些利用" class="headerlink" title="反射的一些利用"></a>反射的一些利用</h1><p><code>forName</code> 有两个函数重载</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Class&lt;?&gt; forName(String name)</span><br><span class="line">Class&lt;?&gt; forName(String name, **<span class="type">boolean</span>** initialize, ClassLoader loader)</span><br></pre></td></tr></table></figure>
+
+<p>何为重载，来简单解释一番：</p>
+<p>我们知道，对于重写来说，就是子类的方法实现覆盖父类的方法，但是子类的方法中，方法名称、参数列表和返回类型与父类方法不能有不同，这一步可以概括为：<strong>外壳不变，核心重写</strong></p>
+<p>重写是父类与子类之间多态性的一种表现，而重载可以理解为多态的具体表现形式</p>
+<p>我们来看一个例子</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Overloading</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">test</span><span class="params">()</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;test1&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test</span><span class="params">(<span class="type">int</span> a)</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;test2&quot;</span>);</span><br><span class="line">    &#125;   </span><br><span class="line"> </span><br><span class="line">    <span class="comment">//以下两个参数类型顺序不同</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">test</span><span class="params">(<span class="type">int</span> a,String s)</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;test3&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;returntest3&quot;</span>;</span><br><span class="line">    &#125;   </span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">test</span><span class="params">(String s,<span class="type">int</span> a)</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;test4&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;returntest4&quot;</span>;</span><br><span class="line">    &#125;   </span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span>&#123;</span><br><span class="line">        <span class="type">Overloading</span> <span class="variable">o</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Overloading</span>();</span><br><span class="line">        System.out.println(o.test());</span><br><span class="line">        o.test(<span class="number">1</span>);</span><br><span class="line">        System.out.println(o.test(<span class="number">1</span>,<span class="string">&quot;test3&quot;</span>));</span><br><span class="line">        System.out.println(o.test(<span class="string">&quot;test4&quot;</span>,<span class="number">1</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>显然，这里可以看到，方法的重载，可以改变返回类型、异常和访问，同时，对方法进行重载时参数列表必须要修改</p>
+<p>用一张图来直观的体现</p>
+<p><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240929210729189.png" alt="image-20240929210729189"></p>
+<p>再回过头来看我们的 <code>forName</code></p>
+<p>默认情况下，<code>forName</code> 的第一个参数是类名，第二个参数表示是否初始化，第三个参数就是 <code>ClassLoader</code></p>
+<p><code>ClassLoader</code> 是一个加载器，告知 Java虚拟机如何加载此类，这里挖个坑，在后面会补</p>
+<p>第二个参数是否初始化，其实这里的初始并不是指构造函数的运行</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TrainPrint</span> &#123;</span><br><span class="line"> &#123;</span><br><span class="line"> System.out.printf(<span class="string">&quot;Empty block initial %s\n&quot;</span>, <span class="built_in">this</span>.getClass());</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">static</span> &#123;</span><br><span class="line"> System.out.printf(<span class="string">&quot;Static initial %s\n&quot;</span>, TrainPrint.class);</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">public</span> <span class="title function_">TrainPrint</span><span class="params">()</span> &#123;</span><br><span class="line"> System.out.printf(<span class="string">&quot;Initial %s\n&quot;</span>, <span class="built_in">this</span>.getClass());</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于此类来说，如果我们开启了初始化，那么便会首先调用 <code>static</code></p>
+<p>测试代码：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Test</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Class.forName(<span class="string">&quot;TrainPrint&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ClassNotFoundException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TrainPrint</span> &#123;</span><br><span class="line">    &#123;</span><br><span class="line">        System.out.printf(<span class="string">&quot;Empty block initial %s\n&quot;</span>, <span class="built_in">this</span>.getClass());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        System.out.printf(<span class="string">&quot;Static initial %s\n&quot;</span>, TrainPrint.class);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">TrainPrint</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.printf(<span class="string">&quot;Initial %s\n&quot;</span>, <span class="built_in">this</span>.getClass());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果如下</p>
+<p><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240929213513698.png" alt="image-20240929213513698"></p>
+<p>对于这一点的利用，如果一个函数中存在 <code>Class.forName(classname)</code>，那么我们便可以通过编写一个恶意类，再将恶意代码放置于 <code>static</code> 中，从而执行</p>
+]]></content>
+  </entry>
+</search>

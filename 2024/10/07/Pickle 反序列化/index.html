@@ -21,26 +21,45 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"ja0kdaw.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="淡泊以明志 宁静以致远">
-<meta property="og:type" content="website">
+    <meta name="description" content="前置知识Pickle 简介pickle 是 python 中能够序列化和反序列化对象的一个模块，实际上，他跟 python 并没有多大关系，他可以被看做一种独立的“栈语言”，用来实现将 python 对象以及其所拥有的层次结构转换为一个二进制字节流的过程 当然，除去 pickle 外，python 中还有 marshal 模块也可以完成序列化的任务，但是两者的侧重点不同，marshal 的存在主要">
+<meta property="og:type" content="article">
 <meta property="og:title" content="Ja0kdaw&#39;s blog">
-<meta property="og:url" content="https://ja0kdaw.github.io/index.html">
+<meta property="og:url" content="https://ja0kdaw.github.io/2024/10/07/Pickle%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/index.html">
 <meta property="og:site_name" content="Ja0kdaw&#39;s blog">
-<meta property="og:description" content="淡泊以明志 宁静以致远">
+<meta property="og:description" content="前置知识Pickle 简介pickle 是 python 中能够序列化和反序列化对象的一个模块，实际上，他跟 python 并没有多大关系，他可以被看做一种独立的“栈语言”，用来实现将 python 对象以及其所拥有的层次结构转换为一个二进制字节流的过程 当然，除去 pickle 外，python 中还有 marshal 模块也可以完成序列化的任务，但是两者的侧重点不同，marshal 的存在主要">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="c:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240924214505201.png">
+<meta property="og:image" content="c:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240925191453890.png">
+<meta property="og:image" content="c:\Users\Administrator\Pictures\POC.gif">
+<meta property="og:image" content="c:\Users\Administrator\Pictures\20200320230711-7972c0ea-6abc-1.gif">
+<meta property="og:image" content="c:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240925190454066.png">
+<meta property="og:image" content="c:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240925195316224.png">
+<meta property="og:image" content="c:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240925202702712.png">
+<meta property="og:image" content="c:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240925204017160.png">
+<meta property="og:image" content="c:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240925213600065.png">
+<meta property="og:image" content="c:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240925230750081.png">
+<meta property="og:image" content="c:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240926170738745.png">
+<meta property="og:image" content="c:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240926172125658.png">
+<meta property="og:image" content="c:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240926172148903.png">
+<meta property="og:image" content="c:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240926172237423.png">
+<meta property="og:image" content="c:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240926175657631.png">
+<meta property="og:image" content="file:///C:/Users/Administrator/AppData/Roaming/Tencent/Users/1751359640/QQ/WinTemp/RichOle/KONHKM57ZAVC07%60[5U4XBGF.png">
+<meta property="article:published_time" content="2024-10-06T18:01:10.519Z">
+<meta property="article:modified_time" content="2024-09-26T13:42:35.170Z">
 <meta property="article:author" content="Ja0kdaw">
 <meta property="article:tag" content="Web安全">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="c:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240924214505201.png">
 
 
-<link rel="canonical" href="https://ja0kdaw.github.io/">
+<link rel="canonical" href="https://ja0kdaw.github.io/2024/10/07/Pickle%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":true,"isPost":false,"lang":"zh-CN","comments":"","permalink":"","path":"index.html","title":""}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://ja0kdaw.github.io/2024/10/07/Pickle%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/","path":"2024/10/07/Pickle 反序列化/","title":""}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Ja0kdaw's blog</title>
+<title> | Ja0kdaw's blog</title>
   
 
 
@@ -73,7 +92,7 @@
 
     <a href="/" class="brand" rel="start">
       <i class="logo-line"></i>
-      <h1 class="site-title">Ja0kdaw's blog</h1>
+      <p class="site-title">Ja0kdaw's blog</p>
       <i class="logo-line"></i>
     </a>
       <p class="site-subtitle" itemprop="description">诸君共勉</p>
@@ -127,7 +146,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -140,6 +159,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86"><span class="nav-number">1.</span> <span class="nav-text">前置知识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Pickle-%E7%AE%80%E4%BB%8B"><span class="nav-number">1.1.</span> <span class="nav-text">Pickle 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pickle-%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.2.</span> <span class="nav-text">Pickle 使用示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pickle-%E4%B8%AD%E8%83%BD%E5%A4%9F%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E5%AF%B9%E8%B1%A1"><span class="nav-number">1.3.</span> <span class="nav-text">Pickle 中能够序列化的对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pickle-%E6%A8%A1%E5%9D%97%E5%B8%B8%E8%A7%81%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">Pickle 模块常见方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#reduce"><span class="nav-number">1.4.1.</span> <span class="nav-text">_reduce_</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Pickle-%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">Pickle 工作原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#PVM-%E7%BB%84%E6%88%90%E9%83%A8%E5%88%86"><span class="nav-number">2.1.</span> <span class="nav-text">PVM 组成部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8-opcode"><span class="nav-number">2.2.</span> <span class="nav-text">常用 opcode</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PVM-%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="nav-number">2.3.</span> <span class="nav-text">PVM 工作流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pickletools"><span class="nav-number">2.4.</span> <span class="nav-text">pickletools</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Pickle-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E"><span class="nav-number">3.</span> <span class="nav-text">Pickle 反序列化漏洞</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%BC%94%E7%A4%BA"><span class="nav-number">3.1.</span> <span class="nav-text">基本演示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C"><span class="nav-number">3.2.</span> <span class="nav-text">命令执行</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#R"><span class="nav-number">3.2.1.</span> <span class="nav-text">R</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#i"><span class="nav-number">3.2.2.</span> <span class="nav-text">i</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#o"><span class="nav-number">3.2.3.</span> <span class="nav-text">o</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8D%E5%BC%B9-shell"><span class="nav-number">3.2.4.</span> <span class="nav-text">反弹 shell</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E4%BE%8B%E5%8C%96%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.3.</span> <span class="nav-text">实例化对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%98%E9%87%8F%E8%A6%86%E7%9B%96"><span class="nav-number">3.4.</span> <span class="nav-text">变量覆盖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Bypass"><span class="nav-number">3.5.</span> <span class="nav-text">Bypass</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%95%E8%BF%87-RestrictedUnpickler-%E9%99%90%E5%88%B6"><span class="nav-number">3.5.1.</span> <span class="nav-text">绕过 RestrictedUnpickler 限制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#builtins-%E7%BB%95%E8%BF%87"><span class="nav-number">3.5.1.1.</span> <span class="nav-text">builtins 绕过</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#getattr-%E7%BB%95%E8%BF%87"><span class="nav-number">3.5.1.1.1.</span> <span class="nav-text">getattr() 绕过</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#pickle-loads-%E6%9E%84%E9%80%A0"><span class="nav-number">3.5.1.1.2.</span> <span class="nav-text">pickle.loads() 构造</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#R-%E6%8C%87%E4%BB%A4%E7%BB%95%E8%BF%87"><span class="nav-number">3.5.1.2.</span> <span class="nav-text">R 指令绕过</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#i-%E6%8C%87%E4%BB%A4"><span class="nav-number">3.5.1.2.1.</span> <span class="nav-text">i 指令</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#o-%E6%8C%87%E4%BB%A4"><span class="nav-number">3.5.1.2.2.</span> <span class="nav-text">o 指令</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#b-%E6%8C%87%E4%BB%A4"><span class="nav-number">3.5.1.2.3.</span> <span class="nav-text">b 指令</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E5%AD%97%E7%BB%95%E8%BF%87"><span class="nav-number">3.5.1.3.</span> <span class="nav-text">关键字绕过</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#V-%E6%8C%87%E4%BB%A4%E8%BF%9B%E8%A1%8C-Unicode-%E7%BB%95%E8%BF%87"><span class="nav-number">3.5.1.3.1.</span> <span class="nav-text">V 指令进行 Unicode 绕过</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8D%81%E5%85%AD%E8%BF%9B%E5%88%B6%E7%BB%95%E8%BF%87"><span class="nav-number">3.5.1.3.2.</span> <span class="nav-text">十六进制绕过</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E5%86%85%E7%BD%AE%E5%87%BD%E6%95%B0%E8%8E%B7%E5%8F%96%E5%85%B3%E9%94%AE%E5%AD%97"><span class="nav-number">3.5.1.3.3.</span> <span class="nav-text">利用内置函数获取关键字</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Pker-%E5%B7%A5%E5%85%B7%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">Pker 工具的使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Pker-%E5%8A%9F%E8%83%BD"><span class="nav-number">4.1.</span> <span class="nav-text">Pker 功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95%E5%92%8C%E7%A4%BA%E4%BE%8B"><span class="nav-number">4.2.</span> <span class="nav-text">使用方法和示例</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%98%E6%96%B9%E4%BF%AE%E5%A4%8D%E5%BB%BA%E8%AE%AE"><span class="nav-number">5.</span> <span class="nav-text">官方修复建议</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="nav-number">6.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -171,16 +191,17 @@
 
     </div>
 
-    <div class="main-inner index posts-expand">
+    <div class="main-inner post posts-expand">
 
-    
+
+  
 
 
 <div class="post-block">
   
   
 
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://ja0kdaw.github.io/2024/10/07/Pickle%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -194,13 +215,13 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Ja0kdaw's blog">
+      <meta itemprop="name" content=" | Ja0kdaw's blog">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2024/10/07/Pickle%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="post-title-link" itemprop="url">未命名</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
 
         <div class="post-meta-container">
           <div class="post-meta">
@@ -221,6 +242,13 @@
     </span>
 
   
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
     <span class="post-meta-break"></span>
     <span class="post-meta-item" title="本文字数">
       <span class="post-meta-item-icon">
@@ -244,8 +272,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h1><h2 id="Pickle-简介"><a href="#Pickle-简介" class="headerlink" title="Pickle 简介"></a>Pickle 简介</h2><p>pickle 是 python 中能够序列化和反序列化对象的一个模块，实际上，他跟 python 并没有多大关系，他可以被看做一种独立的“栈语言”，用来实现将 python 对象以及其所拥有的层次结构转换为一个二进制字节流的过程</p>
+    <div class="post-body" itemprop="articleBody"><h1 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h1><h2 id="Pickle-简介"><a href="#Pickle-简介" class="headerlink" title="Pickle 简介"></a>Pickle 简介</h2><p>pickle 是 python 中能够序列化和反序列化对象的一个模块，实际上，他跟 python 并没有多大关系，他可以被看做一种独立的“栈语言”，用来实现将 python 对象以及其所拥有的层次结构转换为一个二进制字节流的过程</p>
 <p>当然，除去 pickle 外，python 中还有 marshal 模块也可以完成序列化的任务，但是两者的侧重点不同，marshal 的存在主要是为了支持 python 的 .pyc 文件，在开发时我们也会首选 pickle</p>
 <p>pickle 主要是通过对 opcode 的编写从而进行 python 的代码运行，变量覆盖等操作，直接编写的 opcode 灵活性会比使用 pickle 序列化形成的代码更高，并且有些代码并不能通过 pickle 序列化得到</p>
 <p>由于 opcode 能够执行 python 代码，所以也会引发一系列的安全问题，下面是一张来自 python 在 pickle 文档中的一句警告</p>
@@ -737,7 +764,6 @@
 <p><a target="_blank" rel="noopener" href="https://goodapple.top/archives/1069">https://goodapple.top/archives/1069</a></p>
 <p><a target="_blank" rel="noopener" href="https://www.leavesongs.com/PENETRATION/code-breaking-2018-python-sandbox.html">https://www.leavesongs.com/PENETRATION/code-breaking-2018-python-sandbox.html</a></p>
 
-      
     </div>
 
     
@@ -745,136 +771,22 @@
     
 
     <footer class="post-footer">
-        <div class="post-eof"></div>
-      
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/10/07/Java%20%E5%8F%8D%E5%B0%84/" rel="prev" title="">
+                  <i class="fa fa-angle-left"></i> 
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
     </footer>
   </article>
 </div>
 
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://ja0kdaw.github.io/2024/10/07/Java%20%E5%8F%8D%E5%B0%84/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Ja0kdaw">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Ja0kdaw's blog">
-      <meta itemprop="description" content="淡泊以明志 宁静以致远">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Ja0kdaw's blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2024/10/07/Java%20%E5%8F%8D%E5%B0%84/" class="post-title-link" itemprop="url">未命名</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2024-10-07 00:52:24 / 修改时间：01:59:47" itemprop="dateCreated datePublished" datetime="2024-10-07T00:52:24+08:00">2024-10-07</time>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>2.8k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>5 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在聊 Java 反射前，我们先来简单的理解一下何为反射</p>
-<p>有“反”，那么相应的也就有“正”，我们先来看看“正”是概念，看一段代码</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Person</span> <span class="variable">person</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Person</span>();</span><br><span class="line">person.setname(<span class="string">&quot;Jack&quot;</span>);</span><br></pre></td></tr></table></figure>
-
-<p>上面这段代码，显然在利用类 <code>Person</code> 之前，我们知道它是用来做什么的，也知道我们要利用什么。因此在这里，我们对该类进行了实例化，再使用这个类对象进行操作。这样一个对类对象的初始化的例子，我们可以理解为“正”</p>
-<p>那么何为“反”呢，从“正”的反面来看，就是我们在一开始不知道初始化的类对象是什么，也就无法使用 <code>New</code> 来创建对象</p>
-<p>来看一段代码</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">execute</span><span class="params">(String className, String methodName)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line"> <span class="type">Class</span> <span class="variable">clazz</span> <span class="operator">=</span> Class.forName(className);</span><br><span class="line"> clazz.getMethod(methodName).invoke(clazz.newInstance());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这里简单解释一下，<code>forName</code> 用于获取对应类名为 <code>classname</code> 的类，<code>getMethod</code> 用于获取该类中的方法 <code>methodName</code>，而 <code>.invoke</code> 则是用来执行这个函数</p>
-<p>那么显然，如果我们在不知道传入的参数值的情况下，我们是不知道本段代码会实例化什么对象以及调用什么方法，这也就是反射</p>
-<h1 id="Java-中获取类的途径"><a href="#Java-中获取类的途径" class="headerlink" title="Java 中获取类的途径"></a>Java 中获取类的途径</h1><p>除去 <code>forName</code> 外，下面还有几种方法获取类</p>
-<ul>
-<li><code>obj.getClass()</code> 如果上下⽂中存在某个类的实例 <code>obj</code> ，那么我们可以直接通过 <code>obj.getClass()</code> 来获取它的类 </li>
-<li><code>Test.class</code> 如果你已经加载了某个类，只是想获取到它的 <code>java.lang.Class</code> 对象，那么就直接 拿它的 <code>class</code> 属性即可。这个⽅法其实不属于反射。</li>
-</ul>
-<h1 id="反射的一些利用"><a href="#反射的一些利用" class="headerlink" title="反射的一些利用"></a>反射的一些利用</h1><p><code>forName</code> 有两个函数重载</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Class&lt;?&gt; forName(String name)</span><br><span class="line">Class&lt;?&gt; forName(String name, **<span class="type">boolean</span>** initialize, ClassLoader loader)</span><br></pre></td></tr></table></figure>
-
-<p>何为重载，来简单解释一番：</p>
-<p>我们知道，对于重写来说，就是子类的方法实现覆盖父类的方法，但是子类的方法中，方法名称、参数列表和返回类型与父类方法不能有不同，这一步可以概括为：<strong>外壳不变，核心重写</strong></p>
-<p>重写是父类与子类之间多态性的一种表现，而重载可以理解为多态的具体表现形式</p>
-<p>我们来看一个例子</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Overloading</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">test</span><span class="params">()</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;test1&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test</span><span class="params">(<span class="type">int</span> a)</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;test2&quot;</span>);</span><br><span class="line">    &#125;   </span><br><span class="line"> </span><br><span class="line">    <span class="comment">//以下两个参数类型顺序不同</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">test</span><span class="params">(<span class="type">int</span> a,String s)</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;test3&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;returntest3&quot;</span>;</span><br><span class="line">    &#125;   </span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">test</span><span class="params">(String s,<span class="type">int</span> a)</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;test4&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;returntest4&quot;</span>;</span><br><span class="line">    &#125;   </span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span>&#123;</span><br><span class="line">        <span class="type">Overloading</span> <span class="variable">o</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Overloading</span>();</span><br><span class="line">        System.out.println(o.test());</span><br><span class="line">        o.test(<span class="number">1</span>);</span><br><span class="line">        System.out.println(o.test(<span class="number">1</span>,<span class="string">&quot;test3&quot;</span>));</span><br><span class="line">        System.out.println(o.test(<span class="string">&quot;test4&quot;</span>,<span class="number">1</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>显然，这里可以看到，方法的重载，可以改变返回类型、异常和访问，同时，对方法进行重载时参数列表必须要修改</p>
-<p>用一张图来直观的体现</p>
-<p><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240929210729189.png" alt="image-20240929210729189"></p>
-<p>再回过头来看我们的 <code>forName</code></p>
-<p>默认情况下，<code>forName</code> 的第一个参数是类名，第二个参数表示是否初始化，第三个参数就是 <code>ClassLoader</code></p>
-<p><code>ClassLoader</code> 是一个加载器，告知 Java虚拟机如何加载此类，这里挖个坑，在后面会补</p>
-<p>第二个参数是否初始化，其实这里的初始并不是指构造函数的运行</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TrainPrint</span> &#123;</span><br><span class="line"> &#123;</span><br><span class="line"> System.out.printf(<span class="string">&quot;Empty block initial %s\n&quot;</span>, <span class="built_in">this</span>.getClass());</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">static</span> &#123;</span><br><span class="line"> System.out.printf(<span class="string">&quot;Static initial %s\n&quot;</span>, TrainPrint.class);</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">public</span> <span class="title function_">TrainPrint</span><span class="params">()</span> &#123;</span><br><span class="line"> System.out.printf(<span class="string">&quot;Initial %s\n&quot;</span>, <span class="built_in">this</span>.getClass());</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>对于此类来说，如果我们开启了初始化，那么便会首先调用 <code>static</code></p>
-<p>测试代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Test</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Class.forName(<span class="string">&quot;TrainPrint&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ClassNotFoundException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TrainPrint</span> &#123;</span><br><span class="line">    &#123;</span><br><span class="line">        System.out.printf(<span class="string">&quot;Empty block initial %s\n&quot;</span>, <span class="built_in">this</span>.getClass());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        System.out.printf(<span class="string">&quot;Static initial %s\n&quot;</span>, TrainPrint.class);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">TrainPrint</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.printf(<span class="string">&quot;Initial %s\n&quot;</span>, <span class="built_in">this</span>.getClass());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>运行结果如下</p>
-<p><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240929213513698.png" alt="image-20240929213513698"></p>
-<p>对于这一点的利用，如果一个函数中存在 <code>Class.forName(classname)</code>，那么我们便可以通过编写一个恶意类，再将恶意代码放置于 <code>static</code> 中，从而执行</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
 
 
 

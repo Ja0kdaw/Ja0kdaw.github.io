@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title></title>
-    <url>/2024/10/07/Java%20%E5%8F%8D%E5%B0%84/</url>
+    <title>java 反射</title>
+    <url>/2024/10/07/java-%E5%8F%8D%E5%B0%84/</url>
     <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在聊 Java 反射前，我们先来简单的理解一下何为反射</p>
 <p>有“反”，那么相应的也就有“正”，我们先来看看“正”是概念，看一段代码</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">Person</span> <span class="variable">person</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Person</span>();</span><br><span class="line">person.setname(<span class="string">&quot;Jack&quot;</span>);</span><br></pre></td></tr></table></figure>
@@ -45,10 +45,13 @@
 <p><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240929213513698.png" alt="image-20240929213513698"></p>
 <p>对于这一点的利用，如果一个函数中存在 <code>Class.forName(classname)</code>，那么我们便可以通过编写一个恶意类，再将恶意代码放置于 <code>static</code> 中，从而执行</p>
 ]]></content>
+      <tags>
+        <tag>Java 基础</tag>
+      </tags>
   </entry>
   <entry>
-    <title></title>
-    <url>/2024/10/07/Pickle%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/</url>
+    <title>Pickle 反序列化</title>
+    <url>/2024/10/07/Pickle-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/</url>
     <content><![CDATA[<h1 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h1><h2 id="Pickle-简介"><a href="#Pickle-简介" class="headerlink" title="Pickle 简介"></a>Pickle 简介</h2><p>pickle 是 python 中能够序列化和反序列化对象的一个模块，实际上，他跟 python 并没有多大关系，他可以被看做一种独立的“栈语言”，用来实现将 python 对象以及其所拥有的层次结构转换为一个二进制字节流的过程</p>
 <p>当然，除去 pickle 外，python 中还有 marshal 模块也可以完成序列化的任务，但是两者的侧重点不同，marshal 的存在主要是为了支持 python 的 .pyc 文件，在开发时我们也会首选 pickle</p>
 <p>pickle 主要是通过对 opcode 的编写从而进行 python 的代码运行，变量覆盖等操作，直接编写的 opcode 灵活性会比使用 pickle 序列化形成的代码更高，并且有些代码并不能通过 pickle 序列化得到</p>
@@ -541,5 +544,8 @@
 <p><a href="https://goodapple.top/archives/1069">https://goodapple.top/archives/1069</a></p>
 <p><a href="https://www.leavesongs.com/PENETRATION/code-breaking-2018-python-sandbox.html">https://www.leavesongs.com/PENETRATION/code-breaking-2018-python-sandbox.html</a></p>
 ]]></content>
+      <tags>
+        <tag>Python</tag>
+      </tags>
   </entry>
 </search>
